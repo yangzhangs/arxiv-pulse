@@ -48,11 +48,7 @@
           x-model="newTagName"
           placeholder="标签名称"
           class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-        <input 
-          type="color" 
-          x-model="newTagColor"
-          class="h-10 w-20 border border-gray-300 rounded-lg cursor-pointer"
+          @keyup.enter="addTag()"
         >
         <button 
           @click="addTag()"
@@ -78,11 +74,7 @@
           <template x-for="tag in tags" :key="tag.id">
             <div class="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
               <div class="flex items-center space-x-3">
-                <div 
-                  class="w-4 h-4 rounded-full" 
-                  :style="'background-color: ' + tag.color"
-                ></div>
-                <span class="font-medium" x-text="tag.name"></span>
+                <span class="font-medium px-3 py-1 bg-blue-100 text-blue-700 rounded-full" x-text="tag.name"></span>
               </div>
               <div class="flex items-center space-x-2">
                 <a 
@@ -91,13 +83,6 @@
                 >
                   查看
                 </a>
-                <button 
-                  @click="deleteTag(tag.id)"
-                  class="text-red-600 hover:text-red-800 text-sm"
-                  x-show="tag.name !== 'Docker' && tag.name !== 'CI/CD' && tag.name !== 'DevOps'"
-                >
-                  删除
-                </button>
               </div>
             </div>
           </template>
@@ -116,7 +101,6 @@
         tags: [],
         loading: false,
         newTagName: '',
-        newTagColor: '#3b82f6',
 
         async init() {
           await this.loadTags();
@@ -125,7 +109,7 @@
         async loadTags() {
           this.loading = true;
           try {
-            const response = await fetch('/api/tags');
+            const response = await fetch('api/tags');
             const data = await response.json();
             this.tags = data.tags || [];
           } catch (error) {
@@ -142,18 +126,16 @@
           }
 
           try {
-            const response = await fetch('/api/tags', {
+            const response = await fetch('api/tags', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                name: this.newTagName.trim(),
-                color: this.newTagColor
+                name: this.newTagName.trim()
               })
             });
 
             if (response.ok) {
               this.newTagName = '';
-              this.newTagColor = '#3b82f6';
               await this.loadTags();
               alert('标签添加成功！');
             } else {
