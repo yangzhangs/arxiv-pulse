@@ -30,7 +30,7 @@ function paperApp() {
 
     async loadTags() {
       try {
-        const response = await fetch('/api/tags');
+        const response = await fetch('api/tags');
         const data = await response.json();
         this.tags = data.tags || [];
       } catch (error) {
@@ -41,10 +41,10 @@ function paperApp() {
     async loadPapers() {
       this.loading = true;
       try {
-        let url = `/api/papers?page=${this.currentPage}&limit=${this.pagination.limit}`;
+        let url = `api/papers?page=${this.currentPage}&limit=${this.pagination.limit}`;
         
         if (this.selectedTag) {
-          url = `/api/papers/tag/${encodeURIComponent(this.selectedTag)}?page=${this.currentPage}&limit=${this.pagination.limit}`;
+          url = `api/papers/tag/${encodeURIComponent(this.selectedTag)}?page=${this.currentPage}&limit=${this.pagination.limit}`;
         }
 
         const response = await fetch(url);
@@ -67,7 +67,7 @@ function paperApp() {
 
       this.loading = true;
       try {
-        const url = `/api/papers/search/${encodeURIComponent(this.searchQuery)}?page=${this.currentPage}&limit=${this.pagination.limit}`;
+        const url = `api/papers/search/${encodeURIComponent(this.searchQuery)}?page=${this.currentPage}&limit=${this.pagination.limit}`;
         const response = await fetch(url);
         const data = await response.json();
         
