@@ -48,7 +48,7 @@ sudo nginx -s reload
 | **PM2 进程** | ✅ arxiv-pulse (online) |
 | **Nginx 配置** | ✅ /etc/nginx/sites-available/arxiv-pulse |
 | **数据库** | ✅ /root/.openclaw/workspace/projects/arxiv-pulse/data/arxiv-pulse.db |
-| **访问地址** | ✅ https://www.reset-group.site/arxiv-papers |
+| **访问地址** | ✅ http://www.reset-group.site/arxiv-pulse |
 
 ---
 
@@ -123,6 +123,8 @@ node /root/.openclaw/workspace/projects/arxiv-pulse/src/utils/sync-papers.js pap
 **触发时间：** 每周二至周六 08:00-09:00（北京时间）
 
 **发送渠道：** 飞书 → 张洋
+
+**网站访问：** http://www.reset-group.site/arxiv-pulse
 
 ---
 
