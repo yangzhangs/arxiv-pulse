@@ -15,7 +15,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16">
         <div class="flex items-center">
-          <a href="/" class="flex items-center space-x-2">
+          <a href="." class="flex items-center space-x-2">
             <span class="text-2xl">📚</span>
             <span class="font-bold text-xl text-gray-900">ArxivPulse</span>
           </a>
@@ -23,9 +23,9 @@
         
         <!-- 桌面导航 -->
         <div class="hidden md:flex items-center space-x-8">
-          <a href="/" class="text-blue-600 font-medium">首页</a>
-          <a href="/tags" class="text-gray-600 hover:text-gray-900">标签</a>
-          <a href="/about" class="text-gray-600 hover:text-gray-900">关于</a>
+          <a href="." class="text-blue-600 font-medium">首页</a>
+          <a href="tags" class="text-gray-600 hover:text-gray-900">标签</a>
+          <a href="about" class="text-gray-600 hover:text-gray-900">关于</a>
         </div>
 
         <!-- 移动端菜单按钮 -->
@@ -42,9 +42,9 @@
     <!-- 移动端菜单 -->
     <div x-show="mobileMenuOpen" class="md:hidden bg-white border-t">
       <div class="px-4 py-2 space-y-2">
-        <a href="/" class="block py-2 text-blue-600 font-medium">首页</a>
-        <a href="/tags" class="block py-2 text-gray-600">标签</a>
-        <a href="/about" class="block py-2 text-gray-600">关于</a>
+        <a href="." class="block py-2 text-blue-600 font-medium">首页</a>
+        <a href="tags" class="block py-2 text-gray-600">标签</a>
+        <a href="about" class="block py-2 text-gray-600">关于</a>
       </div>
     </div>
   </nav>
@@ -126,7 +126,7 @@
           <div class="flex items-start justify-between">
             <div class="flex-1">
               <h3 class="text-lg font-semibold text-gray-900 mb-2">
-                <a :href="paper.arxiv_url" target="_blank" class="hover:text-blue-600" x-text="paper.title"></a>
+                <a :href="paper.arxiv_url" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600" x-text="paper.title"></a>
               </h3>
               <p class="text-sm text-gray-600 mb-3" x-text="paper.authors"></p>
               <p class="text-gray-700 text-sm mb-4 line-clamp-3" x-text="paper.abstract"></p>
