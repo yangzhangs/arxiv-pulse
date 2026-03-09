@@ -1,0 +1,32 @@
+{
+  "name": "arxiv-pulse",
+  "version": "1.0.0",
+  "description": "Arxiv 学术文章展示平台 - 每日自动同步最新 Software Engineering 领域论文",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "init-db": "node src/utils/init-db.js"
+  },
+  "keywords": [
+    "arxiv",
+    "academic",
+    "papers",
+    "research",
+    "software-engineering"
+  ],
+  "author": "yangzhangs",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "better-sqlite3": "^9.4.3",
+    "dotenv": "^16.4.5",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

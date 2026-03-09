@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>关于 - ArxivPulse</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <!-- 导航栏 -->
+  <nav class="bg-white shadow-sm border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <a href="/" class="flex items-center space-x-2">
+            <span class="text-2xl">📚</span>
+            <span class="font-bold text-xl text-gray-900">ArxivPulse</span>
+          </a>
+        </div>
+        
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="/" class="text-gray-600 hover:text-gray-900">首页</a>
+          <a href="/tags" class="text-gray-600 hover:text-gray-900">标签</a>
+          <a href="/about" class="text-blue-600 font-medium">关于</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 主内容区 -->
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="bg-white rounded-lg shadow-sm border p-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-6">关于 ArxivPulse</h1>
+      
+      <div class="prose prose-blue max-w-none">
+        <p class="text-lg text-gray-700 mb-6">
+          ArxivPulse 是一个自动化的学术文章展示平台，专注于追踪和展示 Software Engineering 领域的最新研究成果。
+        </p>
+
+        <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-4">🎯 项目目标</h2>
+        <ul class="list-disc list-inside space-y-2 text-gray-700 mb-6">
+          <li>每日自动检索 arXiv 上最新的 Software Engineering 领域论文</li>
+          <li>通过智能标签系统对论文进行分类和筛选</li>
+          <li>提供简洁美观的界面，方便快速浏览和搜索</li>
+          <li>支持飞书消息推送，及时获取最新研究动态</li>
+        </ul>
+
+        <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-4">🔧 技术栈</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <div class="font-semibold text-gray-900">Node.js</div>
+            <div class="text-sm text-gray-600">后端运行时</div>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <div class="font-semibold text-gray-900">Express</div>
+            <div class="text-sm text-gray-600">Web 框架</div>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <div class="font-semibold text-gray-900">SQLite</div>
+            <div class="text-sm text-gray-600">数据库</div>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <div class="font-semibold text-gray-900">TailwindCSS</div>
+            <div class="text-sm text-gray-600">样式框架</div>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <div class="font-semibold text-gray-900">Alpine.js</div>
+            <div class="text-sm text-gray-600">前端交互</div>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <div class="font-semibold text-gray-900">arXiv API</div>
+            <div class="text-sm text-gray-600">数据源</div>
+          </div>
+        </div>
+
+        <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-4">📋 功能特性</h2>
+        <ul class="list-disc list-inside space-y-2 text-gray-700 mb-6">
+          <li><strong>自动检索：</strong>每周二至周六自动检索最新论文</li>
+          <li><strong>标签筛选：</strong>支持多标签分类和筛选</li>
+          <li><strong>全文搜索：</strong>支持标题、作者、摘要搜索</li>
+          <li><strong>响应式设计：</strong>支持桌面和移动端</li>
+          <li><strong>消息推送：</strong>飞书定时推送整理后的文章</li>
+          <li><strong>标签扩展：</strong>支持动态添加新标签</li>
+        </ul>
+
+        <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-4">🔍 检索关键词</h2>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">Docker</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">CI/CD</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">DevOps</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">微服务</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">云原生</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">Serverless</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">Hugging Face</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">Github Actions</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">Agent skills</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">弃用包</span>
+        </div>
+
+        <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-4">📬 消息推送</h2>
+        <p class="text-gray-700 mb-4">
+          每周二至周六 08:00-09:00（北京时间），系统会自动发送最新论文摘要到飞书。
+          每篇推送包含：
+        </p>
+        <ul class="list-disc list-inside space-y-2 text-gray-700 mb-6">
+          <li>文章标题和作者</li>
+          <li>PDF 下载链接</li>
+          <li>50 字以内的简要概述</li>
+          <li>相关标签</li>
+        </ul>
+
+        <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-4">📄 许可证</h2>
+        <p class="text-gray-700">
+          本项目采用 <a href="https://opensource.org/licenses/MIT" target="_blank" class="text-blue-600 hover:underline">MIT 许可证</a>
+        </p>
+
+        <div class="mt-8 pt-8 border-t">
+          <p class="text-gray-600 text-sm">
+            <strong>GitHub:</strong> 
+            <a href="https://github.com/yangzhangs/arxiv-pulse" target="_blank" class="text-blue-600 hover:underline">
+              github.com/yangzhangs/arxiv-pulse
+            </a>
+          </p>
+          <p class="text-gray-600 text-sm mt-2">
+            <strong>部署地址:</strong> 
+            <a href="https://www.reset-group.site/arxiv-papers" target="_blank" class="text-blue-600 hover:underline">
+              www.reset-group.site/arxiv-papers
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-white border-t mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="flex items-center space-x-2 mb-4 md:mb-0">
+          <span class="text-2xl">📚</span>
+          <span class="font-bold text-gray-900">ArxivPulse</span>
+        </div>
+        <p class="text-gray-600 text-sm">
+          Powered by <a href="https://arxiv.org" target="_blank" class="text-blue-600 hover:underline">arXiv.org</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

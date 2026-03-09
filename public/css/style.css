@@ -1,0 +1,78 @@
+/**
+ * ArxivPulse 样式
+ */
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* 文本截断 */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 平滑过渡 */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* 打印样式 */
+@media print {
+  nav, footer, button, select {
+    display: none !important;
+  }
+  
+  .line-clamp-3 {
+    -webkit-line-clamp: unset;
+  }
+}
+
+/* 暗色模式支持 */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #1a1a1a;
+  }
+}
+
+/* 加载动画 */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* 卡片悬停效果增强 */
+.bg-white:hover {
+  transform: translateY(-2px);
+}
+
+/* 标签颜色变体 */
+.tag-docker { background-color: #dbeafe; color: #1e40af; }
+.tag-cicd { background-color: #dcfce7; color: #166534; }
+.tag-devops { background-color: #fef3c7; color: #92400e; }
+.tag-serverless { background-color: #f3e8ff; color: #6b21a8; }

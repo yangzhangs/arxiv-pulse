@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>标签管理 - ArxivPulse</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <!-- 导航栏 -->
+  <nav class="bg-white shadow-sm border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <a href="/" class="flex items-center space-x-2">
+            <span class="text-2xl">📚</span>
+            <span class="font-bold text-xl text-gray-900">ArxivPulse</span>
+          </a>
+        </div>
+        
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="/" class="text-gray-600 hover:text-gray-900">首页</a>
+          <a href="/tags" class="text-blue-600 font-medium">标签</a>
+          <a href="/about" class="text-gray-600 hover:text-gray-900">关于</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 主内容区 -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+        x-data="tagsApp()"
+        x-init="init()">
+    
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">标签管理</h1>
+      <p class="text-gray-600">管理和筛选学术文章标签</p>
+    </div>
+
+    <!-- 添加标签 -->
+    <div class="bg-white rounded-lg shadow-sm border p-6 mb-8">
+      <h2 class="text-lg font-semibold mb-4">添加新标签</h2>
+      <div class="flex flex-col sm:flex-row gap-4">
+        <input 
+          type="text" 
+          x-model="newTagName"
+          placeholder="标签名称"
+          class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+        <input 
+          type="color" 
+          x-model="newTagColor"
+          class="h-10 w-20 border border-gray-300 rounded-lg cursor-pointer"
+        >
+        <button 
+          @click="addTag()"
+          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          添加标签
+        </button>
+      </div>
+    </div>
+
+    <!-- 标签列表 -->
+    <div class="bg-white rounded-lg shadow-sm border">
+      <div class="p-6 border-b">
+        <h2 class="text-lg font-semibold">所有标签 (<span x-text="tags.length"></span>)</h2>
+      </div>
+      
+      <div class="p-6">
+        <div x-show="loading" class="text-center py-8">
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+
+        <div x-show="!loading" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <template x-for="tag in tags" :key="tag.id">
+            <div class="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
+              <div class="flex items-center space-x-3">
+                <div 
+                  class="w-4 h-4 rounded-full" 
+                  :style="'background-color: ' + tag.color"
+                ></div>
+                <span class="font-medium" x-text="tag.name"></span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <a 
+                  :href="'/?tag=' + tag.name"
+                  class="text-sm text-blue-600 hover:underline"
+                >
+                  查看
+                </a>
+                <button 
+                  @click="deleteTag(tag.id)"
+                  class="text-red-600 hover:text-red-800 text-sm"
+                  x-show="tag.name !== 'Docker' && tag.name !== 'CI/CD' && tag.name !== 'DevOps'"
+                >
+                  删除
+                </button>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <div x-show="!loading && tags.length === 0" class="text-center py-8 text-gray-600">
+          暂无标签
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function tagsApp() {
+      return {
+        tags: [],
+        loading: false,
+        newTagName: '',
+        newTagColor: '#3b82f6',
+
+        async init() {
+          await this.loadTags();
+        },
+
+        async loadTags() {
+          this.loading = true;
+          try {
+            const response = await fetch('/api/tags');
+            const data = await response.json();
+            this.tags = data.tags || [];
+          } catch (error) {
+            console.error('Failed to load tags:', error);
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        async addTag() {
+          if (!this.newTagName.trim()) {
+            alert('请输入标签名称');
+            return;
+          }
+
+          try {
+            const response = await fetch('/api/tags', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: this.newTagName.trim(),
+                color: this.newTagColor
+              })
+            });
+
+            if (response.ok) {
+              this.newTagName = '';
+              this.newTagColor = '#3b82f6';
+              await this.loadTags();
+              alert('标签添加成功！');
+            } else {
+              const data = await response.json();
+              alert('添加失败：' + (data.error || '未知错误'));
+            }
+          } catch (error) {
+            console.error('Failed to add tag:', error);
+            alert('添加失败：' + error.message);
+          }
+        },
+
+        async deleteTag(id) {
+          if (!confirm('确定要删除这个标签吗？')) return;
+
+          try {
+            const response = await fetch(`/api/tags/${id}`, {
+              method: 'DELETE'
+            });
+
+            if (response.ok) {
+              await this.loadTags();
+              alert('标签删除成功！');
+            } else {
+              alert('删除失败');
+            }
+          } catch (error) {
+            console.error('Failed to delete tag:', error);
+            alert('删除失败：' + error.message);
+          }
+        }
+      }
+    }
+  </script>
+</body>
+</html>

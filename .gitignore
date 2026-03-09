@@ -1,0 +1,29 @@
+# 依赖
+node_modules/
+
+# 环境配置（包含敏感信息）
+.env
+
+# 数据库文件
+data/*.db
+data/*.json
+
+# 日志
+logs/
+*.log
+npm-debug.log*
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE 配置
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 临时文件
+tmp/
+temp/
+.cache/
