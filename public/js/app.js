@@ -1,5 +1,6 @@
 /**
- * ArxivPulse 前端应用
+ * ArxivPulse 前端应用 - 增强版
+ * 显示中文摘要，支持所有强相关论文展示
  */
 
 function paperApp() {
@@ -12,10 +13,11 @@ function paperApp() {
     currentPage: 1,
     pagination: {
       page: 1,
-      limit: 20,
+      limit: 50,  // 增加每页数量，显示所有强相关论文
       total: 0,
       totalPages: 0
     },
+    hasMoreThan10: false,
 
     async init() {
       // 从 URL 获取初始标签
@@ -52,6 +54,7 @@ function paperApp() {
         
         this.papers = data.papers || [];
         this.pagination = data.pagination || this.pagination;
+        this.hasMoreThan10 = data.pagination.total > 10;
       } catch (error) {
         console.error('Failed to load papers:', error);
       } finally {
@@ -73,6 +76,7 @@ function paperApp() {
         
         this.papers = data.papers || [];
         this.pagination = data.pagination || this.pagination;
+        this.hasMoreThan10 = data.pagination.total > 10;
       } catch (error) {
         console.error('Failed to search papers:', error);
       } finally {
@@ -102,6 +106,23 @@ function paperApp() {
         month: 'long',
         day: 'numeric'
       });
+    },
+
+    formatAbstract(abstract) {
+      // 处理中文摘要格式
+      if (!abstract) return '暂无摘要';
+      
+      // 如果是英文摘要，添加提示
+      if (abstract.startsWith('[英文摘要]')) {
+        return abstract.replace('[英文摘要]', '');
+      }
+      
+      // 如果是中文摘要，直接返回
+      if (abstract.startsWith('[中文摘要]')) {
+        return abstract.replace('[中文摘要]', '');
+      }
+      
+      return abstract;
     },
 
     get totalPagesArray() {

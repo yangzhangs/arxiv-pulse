@@ -1,5 +1,6 @@
 /**
  * 数据库模型 - 使用 SQLite
+ * 增强版：支持强相关过滤、去重检测、中文摘要
  */
 
 const Database = require('better-sqlite3');
@@ -113,15 +114,50 @@ class PaperDatabase {
     console.log('✅ 数据库初始化完成');
   }
 
+  // 强相关关键词列表
+  getStrongRelatedKeywords() {
+    return [
+      'Docker', 'CI/CD', 'DevOps', '微服务', '云原生', 
+      'Serverless', 'Hugging Face', 'Github Actions', 
+      'Agent skills', '弃用包', 'Kubernetes', 'MLOps',
+      '容器', '自动化', '持续集成', '持续部署'
+    ];
+  }
+
+  // 构建 SQL WHERE 条件用于强相关过滤
+  getStrongRelatedWhereClause() {
+    return `
+      (
+        p.title LIKE '%Docker%' OR p.title LIKE '%CI/CD%' OR p.title LIKE '%DevOps%' OR
+        p.title LIKE '%微服务%' OR p.title LIKE '%云原生%' OR p.title LIKE '%Serverless%' OR
+        p.title LIKE '%Hugging Face%' OR p.title LIKE '%Github Actions%' OR p.title LIKE '%Agent%' OR
+        p.title LIKE '%弃用包%' OR p.title LIKE '%Kubernetes%' OR p.title LIKE '%MLOps%' OR
+        p.abstract LIKE '%Docker%' OR p.abstract LIKE '%CI/CD%' OR p.abstract LIKE '%DevOps%' OR
+        p.abstract LIKE '%微服务%' OR p.abstract LIKE '%云原生%' OR p.abstract LIKE '%Serverless%' OR
+        p.abstract LIKE '%Hugging Face%' OR p.abstract LIKE '%Github Actions%' OR p.abstract LIKE '%Agent%' OR
+        p.abstract LIKE '%弃用包%' OR p.abstract LIKE '%Kubernetes%' OR p.abstract LIKE '%MLOps%'
+      )
+    `;
+  }
+
+  // 检查论文是否已存在（去重）
+  existsByArxivId(arxivId) {
+    const result = this.db.prepare('SELECT id FROM papers WHERE arxiv_id = ?').get(arxivId);
+    return result !== undefined;
+  }
+
   // 论文操作
-  getAllPapers(page = 1, limit = 20) {
+  getAllPapers(page = 1, limit = 50) {
     const offset = (page - 1) * limit;
+    const strongRelatedWhere = this.getStrongRelatedWhereClause();
+    
     const papers = this.db.prepare(`
       SELECT p.*, GROUP_CONCAT(t.name) as tags
       FROM papers p
       LEFT JOIN paper_tags pt ON p.id = pt.paper_id
       LEFT JOIN tags t ON pt.tag_id = t.id
-      WHERE t.is_approved = 1 OR t.is_approved IS NULL
+      WHERE (${strongRelatedWhere})
+        AND (t.is_approved = 1 OR t.is_approved IS NULL)
       GROUP BY p.id
       ORDER BY p.published_date DESC
       LIMIT ? OFFSET ?
@@ -132,7 +168,8 @@ class PaperDatabase {
       FROM papers p
       LEFT JOIN paper_tags pt ON p.id = pt.paper_id
       LEFT JOIN tags t ON pt.tag_id = t.id
-      WHERE t.is_approved = 1 OR t.is_approved IS NULL
+      WHERE (${strongRelatedWhere})
+        AND (t.is_approved = 1 OR t.is_approved IS NULL)
     `).get();
 
     return {
@@ -266,14 +303,16 @@ class PaperDatabase {
     return stmt.run(paperId, tag.id);
   }
 
-  getPapersByTag(tagName, page = 1, limit = 20) {
+  getPapersByTag(tagName, page = 1, limit = 50) {
     const offset = (page - 1) * limit;
+    const strongRelatedWhere = this.getStrongRelatedWhereClause();
+    
     const papers = this.db.prepare(`
       SELECT p.*, GROUP_CONCAT(t.name) as tags
       FROM papers p
       INNER JOIN paper_tags pt ON p.id = pt.paper_id
       INNER JOIN tags t ON pt.tag_id = t.id
-      WHERE t.name = ? AND t.is_approved = 1
+      WHERE t.name = ? AND t.is_approved = 1 AND (${strongRelatedWhere})
       GROUP BY p.id
       ORDER BY p.published_date DESC
       LIMIT ? OFFSET ?
@@ -284,7 +323,7 @@ class PaperDatabase {
       FROM papers p
       INNER JOIN paper_tags pt ON p.id = pt.paper_id
       INNER JOIN tags t ON pt.tag_id = t.id
-      WHERE t.name = ? AND t.is_approved = 1
+      WHERE t.name = ? AND t.is_approved = 1 AND (${strongRelatedWhere})
     `).get(tagName);
 
     return {
@@ -298,9 +337,10 @@ class PaperDatabase {
     };
   }
 
-  searchPapers(query, page = 1, limit = 20) {
+  searchPapers(query, page = 1, limit = 50) {
     const offset = (page - 1) * limit;
     const searchTerm = `%${query}%`;
+    const strongRelatedWhere = this.getStrongRelatedWhereClause();
     
     const papers = this.db.prepare(`
       SELECT p.*, GROUP_CONCAT(t.name) as tags
@@ -308,6 +348,7 @@ class PaperDatabase {
       LEFT JOIN paper_tags pt ON p.id = pt.paper_id
       LEFT JOIN tags t ON pt.tag_id = t.id
       WHERE (p.title LIKE ? OR p.authors LIKE ? OR p.abstract LIKE ?)
+        AND (${strongRelatedWhere})
         AND (t.is_approved = 1 OR t.is_approved IS NULL)
       GROUP BY p.id
       ORDER BY p.published_date DESC
@@ -320,6 +361,7 @@ class PaperDatabase {
       LEFT JOIN paper_tags pt ON p.id = pt.paper_id
       LEFT JOIN tags t ON pt.tag_id = t.id
       WHERE (p.title LIKE ? OR p.authors LIKE ? OR p.abstract LIKE ?)
+        AND (${strongRelatedWhere})
         AND (t.is_approved = 1 OR t.is_approved IS NULL)
     `).get(searchTerm, searchTerm, searchTerm);
 

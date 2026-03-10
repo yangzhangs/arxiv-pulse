@@ -87,10 +87,26 @@
       </div>
     </div>
 
+    <!-- 提示信息：超过 10 篇 -->
+    <div x-show="hasMoreThan10" class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div class="flex items-start">
+        <svg class="h-5 w-5 text-blue-600 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-blue-800">💡 提示</h3>
+          <p class="mt-1 text-sm text-blue-700">
+            本次检索到 <span class="font-semibold" x-text="pagination.total"></span> 篇强相关论文，超过 10 篇。
+            飞书推送仅包含前 10 篇，完整列表请在网站上查看。
+          </p>
+        </div>
+      </div>
+    </div>
+
     <!-- 统计信息 -->
     <div class="mb-6 flex items-center justify-between">
       <p class="text-gray-600">
-        共 <span class="font-semibold text-gray-900" x-text="pagination.total"></span> 篇文章
+        共 <span class="font-semibold text-gray-900" x-text="pagination.total"></span> 篇强相关论文
         <span x-show="selectedTag" class="ml-2 text-blue-600">
           · 标签：<span x-text="selectedTag"></span>
         </span>
@@ -132,7 +148,7 @@
                 <a :href="paper.arxiv_url" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600" x-text="paper.title"></a>
               </h3>
               <p class="text-sm text-gray-600 mb-3" x-text="paper.authors"></p>
-              <p class="text-gray-700 text-sm mb-4 line-clamp-3" x-text="paper.abstract"></p>
+              <p class="text-gray-700 text-sm mb-4 line-clamp-3" x-text="formatAbstract(paper.abstract)"></p>
               
               <!-- 标签 -->
               <div class="flex flex-wrap gap-2 mb-3">
