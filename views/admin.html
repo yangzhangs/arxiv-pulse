@@ -220,19 +220,25 @@
           password: ''
         },
         sessionId: null,
-        stats: {},
+        stats: { totalPapers: 0, totalTags: 0, pendingApplications: 0, recentPapers: 0 },
         applications: [],
         applicationsLoading: false,
         appFilter: 'pending',
 
         async init() {
-          // 检查是否有保存的会话
-          const savedSession = localStorage.getItem('arxiv-admin-session');
-          if (savedSession) {
-            this.sessionId = savedSession;
-            this.isLoggedIn = true;
-            await this.loadStats();
-            await this.loadApplications('pending');
+          try {
+            // 检查是否有保存的会话
+            const savedSession = localStorage.getItem('arxiv-admin-session');
+            if (savedSession) {
+              this.sessionId = savedSession;
+              this.isLoggedIn = true;
+              await this.loadStats();
+              await this.loadApplications('pending');
+            }
+          } catch (error) {
+            console.warn('Init error:', error.message);
+            // 如果初始化失败，清除状态
+            this.logout();
           }
         },
 
@@ -304,9 +310,13 @@
 
             if (response.ok) {
               this.stats = await response.json();
+            } else {
+              console.warn('Load stats failed:', response.status);
+              this.stats = { totalPapers: 0, totalTags: 0, pendingApplications: 0, recentPapers: 0 };
             }
           } catch (error) {
-            console.error('Failed to load stats:', error);
+            console.warn('Load stats error:', error.message);
+            this.stats = { totalPapers: 0, totalTags: 0, pendingApplications: 0, recentPapers: 0 };
           }
         },
 
@@ -315,16 +325,21 @@
           this.applicationsLoading = true;
 
           try {
-            const response = await fetch(`api/admin/applications?status=${status}`, {
+            const url = `api/admin/applications?status=${encodeURIComponent(status)}`;
+            const response = await fetch(url, {
               headers: { 'x-session-id': this.sessionId }
             });
 
             if (response.ok) {
               const data = await response.json();
               this.applications = data.applications || [];
+            } else {
+              console.warn('Load applications failed:', response.status);
+              this.applications = [];
             }
           } catch (error) {
-            console.error('Failed to load applications:', error);
+            console.warn('Load applications error:', error.message);
+            this.applications = [];
           } finally {
             this.applicationsLoading = false;
           }
