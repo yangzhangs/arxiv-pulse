@@ -10,7 +10,23 @@ const db = require('../models/database');
 router.get('/', (req, res) => {
   try {
     const approvedOnly = req.query.approved !== 'false';
-    const tags = db.getAllTags(approvedOnly);
+    const withCounts = req.query.with_counts === 'true';
+    let tags = db.getAllTags(approvedOnly);
+    
+    if (withCounts) {
+      // 添加每个标签的论文数量
+      tags = tags.map(tag => {
+        const result = db.db.prepare(`
+          SELECT COUNT(DISTINCT p.id) as count
+          FROM papers p
+          INNER JOIN paper_tags pt ON p.id = pt.paper_id
+          INNER JOIN tags t ON pt.tag_id = t.id
+          WHERE t.name = ? AND t.is_approved = 1
+        `).get(tag.name);
+        return { ...tag, paper_count: result.count };
+      });
+    }
+    
     res.json({ tags });
   } catch (error) {
     console.error('Error fetching tags:', error);
