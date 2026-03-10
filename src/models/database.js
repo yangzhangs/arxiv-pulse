@@ -36,7 +36,34 @@ class PaperDatabase {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT UNIQUE NOT NULL,
         color TEXT DEFAULT '#3b82f6',
+        is_approved INTEGER DEFAULT 1,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // 创建标签申请表
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS tag_applications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        color TEXT DEFAULT '#3b82f6',
+        applicant_ip TEXT,
+        status TEXT DEFAULT 'pending',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        reviewed_at DATETIME,
+        reviewer_ip TEXT
+      )
+    `);
+
+    // 创建管理员表
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS admins (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        email TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        last_login DATETIME
       )
     `);
 
@@ -56,6 +83,7 @@ class PaperDatabase {
       CREATE INDEX IF NOT EXISTS idx_papers_date ON papers(published_date DESC);
       CREATE INDEX IF NOT EXISTS idx_papers_arxiv_id ON papers(arxiv_id);
       CREATE INDEX IF NOT EXISTS idx_tags_name ON tags(name);
+      CREATE INDEX IF NOT EXISTS idx_tag_applications_status ON tag_applications(status);
     `);
 
     // 插入默认标签
@@ -65,8 +93,22 @@ class PaperDatabase {
       'Agent skills', '弃用包'
     ];
 
-    const insertTag = this.db.prepare('INSERT OR IGNORE INTO tags (name) VALUES (?)');
+    const insertTag = this.db.prepare('INSERT OR IGNORE INTO tags (name, is_approved) VALUES (?, 1)');
     defaultTags.forEach(tag => insertTag.run(tag));
+
+    // 创建默认管理员账号（仅当不存在时）
+    try {
+      const bcrypt = require('bcryptjs');
+      const defaultAdminUsername = process.env.ADMIN_USERNAME || 'admin';
+      const defaultAdminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+      const passwordHash = bcrypt.hashSync(defaultAdminPassword, 10);
+      
+      const insertAdmin = this.db.prepare('INSERT OR IGNORE INTO admins (username, password_hash) VALUES (?, ?)');
+      insertAdmin.run(defaultAdminUsername, passwordHash);
+      console.log('✅ 默认管理员账号已创建');
+    } catch (error) {
+      console.log('⚠️  bcrypt 未安装，管理员密码功能受限');
+    }
 
     console.log('✅ 数据库初始化完成');
   }
@@ -79,12 +121,19 @@ class PaperDatabase {
       FROM papers p
       LEFT JOIN paper_tags pt ON p.id = pt.paper_id
       LEFT JOIN tags t ON pt.tag_id = t.id
+      WHERE t.is_approved = 1 OR t.is_approved IS NULL
       GROUP BY p.id
       ORDER BY p.published_date DESC
       LIMIT ? OFFSET ?
     `).all(limit, offset);
 
-    const total = this.db.prepare('SELECT COUNT(*) as count FROM papers').get();
+    const total = this.db.prepare(`
+      SELECT COUNT(DISTINCT p.id) as count 
+      FROM papers p
+      LEFT JOIN paper_tags pt ON p.id = pt.paper_id
+      LEFT JOIN tags t ON pt.tag_id = t.id
+      WHERE t.is_approved = 1 OR t.is_approved IS NULL
+    `).get();
 
     return {
       papers,
@@ -120,25 +169,97 @@ class PaperDatabase {
   }
 
   // 标签操作
-  getAllTags() {
+  getAllTags(approvedOnly = true) {
+    if (approvedOnly) {
+      return this.db.prepare('SELECT * FROM tags WHERE is_approved = 1 ORDER BY name').all();
+    }
     return this.db.prepare('SELECT * FROM tags ORDER BY name').all();
   }
 
-  addTag(name, color = '#3b82f6') {
-    const stmt = this.db.prepare('INSERT OR IGNORE INTO tags (name, color) VALUES (?, ?)');
-    return stmt.run(name, color);
+  addTag(name, color = '#3b82f6', isApproved = 1) {
+    const stmt = this.db.prepare('INSERT OR IGNORE INTO tags (name, color, is_approved) VALUES (?, ?, ?)');
+    return stmt.run(name, color, isApproved);
   }
 
   deleteTag(id) {
     return this.db.prepare('DELETE FROM tags WHERE id = ?').run(id);
   }
 
+  approveTag(id) {
+    const update = this.db.prepare(`
+      UPDATE tags SET is_approved = 1 WHERE id = ?
+    `);
+    return update.run(id);
+  }
+
+  rejectTag(id) {
+    return this.db.prepare('DELETE FROM tags WHERE id = ? AND is_approved = 0').run(id);
+  }
+
+  // 标签申请操作
+  getAllApplications(status = 'all') {
+    let query;
+    if (status === 'all') {
+      query = 'SELECT * FROM tag_applications ORDER BY created_at DESC';
+    } else {
+      query = 'SELECT * FROM tag_applications WHERE status = ? ORDER BY created_at DESC';
+      return this.db.prepare(query).all(status);
+    }
+    return this.db.prepare(query).all();
+  }
+
+  createApplication(name, color = '#3b82f6', applicantIp = '') {
+    const stmt = this.db.prepare(`
+      INSERT INTO tag_applications (name, color, applicant_ip, status)
+      VALUES (?, ?, ?, 'pending')
+    `);
+    return stmt.run(name, color, applicantIp);
+  }
+
+  reviewApplication(id, approved, reviewerIp = '') {
+    const app = this.db.prepare('SELECT * FROM tag_applications WHERE id = ?').get(id);
+    if (!app) return null;
+
+    const reviewStmt = this.db.prepare(`
+      UPDATE tag_applications 
+      SET status = ?, reviewed_at = CURRENT_TIMESTAMP, reviewer_ip = ?
+      WHERE id = ?
+    `);
+    reviewStmt.run(approved ? 'approved' : 'rejected', reviewerIp, id);
+
+    if (approved) {
+      // 将申请的标签添加到正式标签表
+      const tagResult = this.addTag(app.name, app.color, 1);
+      return { success: true, tagId: tagResult.lastInsertRowid };
+    }
+    return { success: true, rejected: true };
+  }
+
+  deleteApplication(id) {
+    return this.db.prepare('DELETE FROM tag_applications WHERE id = ?').run(id);
+  }
+
+  // 管理员操作
+  getAdminByUsername(username) {
+    return this.db.prepare('SELECT * FROM admins WHERE username = ?').get(username);
+  }
+
+  createAdmin(username, passwordHash, email = '') {
+    const stmt = this.db.prepare('INSERT INTO admins (username, password_hash, email) VALUES (?, ?, ?)');
+    return stmt.run(username, passwordHash, email);
+  }
+
+  updateAdminLastLogin(id) {
+    return this.db.prepare(`
+      UPDATE admins SET last_login = CURRENT_TIMESTAMP WHERE id = ?
+    `).run(id);
+  }
+
   // 论文标签关联
   addPaperTag(paperId, tagName) {
-    const tag = this.db.prepare('SELECT id FROM tags WHERE name = ?').get(tagName);
+    const tag = this.db.prepare('SELECT id FROM tags WHERE name = ? AND is_approved = 1').get(tagName);
     if (!tag) {
-      this.addTag(tagName);
-      tag.id = this.db.prepare('SELECT id FROM tags WHERE name = ?').get(tagName).id;
+      return null; // 只允许添加已审核的标签
     }
     
     const stmt = this.db.prepare('INSERT OR IGNORE INTO paper_tags (paper_id, tag_id) VALUES (?, ?)');
@@ -152,7 +273,7 @@ class PaperDatabase {
       FROM papers p
       INNER JOIN paper_tags pt ON p.id = pt.paper_id
       INNER JOIN tags t ON pt.tag_id = t.id
-      WHERE t.name = ?
+      WHERE t.name = ? AND t.is_approved = 1
       GROUP BY p.id
       ORDER BY p.published_date DESC
       LIMIT ? OFFSET ?
@@ -163,7 +284,7 @@ class PaperDatabase {
       FROM papers p
       INNER JOIN paper_tags pt ON p.id = pt.paper_id
       INNER JOIN tags t ON pt.tag_id = t.id
-      WHERE t.name = ?
+      WHERE t.name = ? AND t.is_approved = 1
     `).get(tagName);
 
     return {
@@ -186,7 +307,8 @@ class PaperDatabase {
       FROM papers p
       LEFT JOIN paper_tags pt ON p.id = pt.paper_id
       LEFT JOIN tags t ON pt.tag_id = t.id
-      WHERE p.title LIKE ? OR p.authors LIKE ? OR p.abstract LIKE ?
+      WHERE (p.title LIKE ? OR p.authors LIKE ? OR p.abstract LIKE ?)
+        AND (t.is_approved = 1 OR t.is_approved IS NULL)
       GROUP BY p.id
       ORDER BY p.published_date DESC
       LIMIT ? OFFSET ?
@@ -195,7 +317,10 @@ class PaperDatabase {
     const total = this.db.prepare(`
       SELECT COUNT(DISTINCT p.id) as count
       FROM papers p
-      WHERE p.title LIKE ? OR p.authors LIKE ? OR p.abstract LIKE ?
+      LEFT JOIN paper_tags pt ON p.id = pt.paper_id
+      LEFT JOIN tags t ON pt.tag_id = t.id
+      WHERE (p.title LIKE ? OR p.authors LIKE ? OR p.abstract LIKE ?)
+        AND (t.is_approved = 1 OR t.is_approved IS NULL)
     `).get(searchTerm, searchTerm, searchTerm);
 
     return {

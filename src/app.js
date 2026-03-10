@@ -32,19 +32,21 @@ app.use('/api/papers', papersRouter);
 app.use('/api/tags', tagsRouter);
 app.use('/api/admin', adminRouter);
 
-// 首页
+// 页面路由
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../views/index.html'));
 });
 
-// 标签页面
 app.get('/tags', (req, res) => {
   res.sendFile(path.join(__dirname, '../views/tags.html'));
 });
 
-// 关于页面
 app.get('/about', (req, res) => {
   res.sendFile(path.join(__dirname, '../views/about.html'));
+});
+
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, '../views/admin.html'));
 });
 
 // 404
@@ -67,6 +69,9 @@ app.listen(PORT, '127.0.0.1', () => {
 ║                                                        ║
 ║   Server running at: http://127.0.0.1:${PORT}           ║
 ║   Public URL: https://www.reset-group.site/arxiv-papers ║
+║                                                        ║
+║   Admin Panel: http://127.0.0.1:${PORT}/admin          ║
+║   Default Admin: admin / admin123                      ║
 ║                                                        ║
 ║   Status: ✅ Ready                                     ║
 ║                                                        ║

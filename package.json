@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "init-db": "node src/utils/init-db.js"
+    "init-db": "node src/utils/init-db.js",
+    "migrate": "node src/utils/migrate-db.js"
   },
   "keywords": [
     "arxiv",
@@ -18,10 +19,11 @@
   "author": "yangzhangs",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
+    "bcryptjs": "^2.4.3",
     "better-sqlite3": "^9.4.3",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "cors": "^2.8.5"
+    "express": "^4.18.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
