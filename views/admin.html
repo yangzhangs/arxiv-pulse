@@ -7,10 +7,13 @@
   <base href="/arxiv-pulse/">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <style>
+    [x-cloak] { display: none !important; }
+  </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
   <!-- 导航栏 -->
-  <nav class="bg-white shadow-sm border-b">
+  <nav class="bg-white shadow-sm border-b" x-cloak>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16">
         <div class="flex items-center">
@@ -28,7 +31,7 @@
           <button 
             x-show="isLoggedIn"
             @click="logout()"
-            class="text-red-600 hover:text-red-700"
+            class="text-red-600 hover:text-red-700 font-medium"
           >
             登出
           </button>
@@ -38,12 +41,10 @@
   </nav>
 
   <!-- 主内容区 -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
-        x-data="adminApp()"
-        x-init="init()">
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     
     <!-- 登录表单 -->
-    <div x-show="!isLoggedIn" class="max-w-md mx-auto">
+    <div x-show="!isLoggedIn" x-cloak class="max-w-md mx-auto">
       <div class="bg-white rounded-lg shadow-sm border p-8">
         <h1 class="text-2xl font-bold text-gray-900 mb-6 text-center">管理员登录</h1>
         
@@ -85,16 +86,16 @@
     </div>
 
     <!-- 管理后台 -->
-    <div x-show="isLoggedIn" class="space-y-8">
+    <div x-show="isLoggedIn" x-cloak class="space-y-8">
       <!-- 统计卡片 -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white rounded-lg shadow-sm border p-6">
           <div class="text-sm text-gray-600 mb-2">总论文数</div>
-          <div class="text-3xl font-bold text-gray-900" x-text="stats.totalPapers || '-'></div>
+          <div class="text-3xl font-bold text-gray-900" x-text="stats.totalPapers || '-'"></div>
         </div>
         <div class="bg-white rounded-lg shadow-sm border p-6">
           <div class="text-sm text-gray-600 mb-2">标签数量</div>
-          <div class="text-3xl font-bold text-gray-900" x-text="stats.totalTags || '-'></div>
+          <div class="text-3xl font-bold text-gray-900" x-text="stats.totalTags || '-'"></div>
         </div>
         <div class="bg-white rounded-lg shadow-sm border p-6">
           <div class="text-sm text-gray-600 mb-2">待审核申请</div>
@@ -102,49 +103,52 @@
         </div>
         <div class="bg-white rounded-lg shadow-sm border p-6">
           <div class="text-sm text-gray-600 mb-2">近 7 天新增</div>
-          <div class="text-3xl font-bold text-gray-900" x-text="stats.recentPapers || '-'></div>
+          <div class="text-3xl font-bold text-gray-900" x-text="stats.recentPapers || '-'"></div>
         </div>
       </div>
 
       <!-- 标签申请审核 -->
       <div class="bg-white rounded-lg shadow-sm border">
-        <div class="p-6 border-b flex items-center justify-between">
-          <h2 class="text-lg font-semibold">标签申请审核</h2>
-          <div class="flex gap-2">
-            <button 
-              @click="loadApplications('all')"
-              :class="appFilter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'"
-              class="px-3 py-1 rounded text-sm"
-            >
-              全部
-            </button>
-            <button 
-              @click="loadApplications('pending')"
-              :class="appFilter === 'pending' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'"
-              class="px-3 py-1 rounded text-sm"
-            >
-              待审核
-            </button>
-            <button 
-              @click="loadApplications('approved')"
-              :class="appFilter === 'approved' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'"
-              class="px-3 py-1 rounded text-sm"
-            >
-              已通过
-            </button>
-            <button 
-              @click="loadApplications('rejected')"
-              :class="appFilter === 'rejected' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'"
-              class="px-3 py-1 rounded text-sm"
-            >
-              已拒绝
-            </button>
+        <div class="p-6 border-b">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <h2 class="text-lg font-semibold">标签申请审核</h2>
+            <div class="flex flex-wrap gap-2">
+              <button 
+                @click="loadApplications('all')"
+                :class="appFilter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+                class="px-3 py-1 rounded text-sm transition-colors"
+              >
+                全部
+              </button>
+              <button 
+                @click="loadApplications('pending')"
+                :class="appFilter === 'pending' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+                class="px-3 py-1 rounded text-sm transition-colors"
+              >
+                待审核
+              </button>
+              <button 
+                @click="loadApplications('approved')"
+                :class="appFilter === 'approved' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+                class="px-3 py-1 rounded text-sm transition-colors"
+              >
+                已通过
+              </button>
+              <button 
+                @click="loadApplications('rejected')"
+                :class="appFilter === 'rejected' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+                class="px-3 py-1 rounded text-sm transition-colors"
+              >
+                已拒绝
+              </button>
+            </div>
           </div>
         </div>
         
         <div class="p-6">
-          <div x-show="applicationsLoading" class="text-center py-8">
+          <div x-show="applicationsLoading" class="text-center py-12">
             <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <p class="mt-4 text-gray-600">加载中...</p>
           </div>
 
           <div x-show="!applicationsLoading && applications.length === 0" class="text-center py-12">
@@ -154,14 +158,14 @@
             <p class="mt-4 text-gray-600">暂无申请记录</p>
           </div>
 
-          <div x-show="!applicationsLoading" class="space-y-4">
+          <div x-show="!applicationsLoading && applications.length > 0" class="space-y-4">
             <template x-for="app in applications" :key="app.id">
-              <div class="border rounded-lg p-4">
-                <div class="flex items-center justify-between mb-3">
+              <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
                   <div class="flex items-center space-x-3">
                     <span class="font-semibold text-lg" x-text="app.name"></span>
                     <span 
-                      class="px-2 py-1 text-xs rounded-full"
+                      class="px-2 py-1 text-xs rounded-full font-medium"
                       :class="{
                         'bg-yellow-100 text-yellow-700': app.status === 'pending',
                         'bg-green-100 text-green-700': app.status === 'approved',
@@ -175,27 +179,27 @@
                 
                 <div class="text-sm text-gray-600 mb-3">
                   <span>申请人 IP: </span>
-                  <span class="font-mono" x-text="app.applicant_ip || '未知'"></span>
+                  <span class="font-mono text-xs" x-text="app.applicant_ip || '未知'"></span>
                 </div>
                 
                 <div x-show="app.status === 'pending'" class="flex gap-2">
                   <button 
                     @click="reviewApplication(app.id, true)"
-                    class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+                    class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm font-medium transition-colors"
                   >
                     ✓ 通过
                   </button>
                   <button 
                     @click="reviewApplication(app.id, false)"
-                    class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
+                    class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-medium transition-colors"
                   >
                     ✗ 拒绝
                   </button>
                 </div>
                 
-                <div x-show="app.reviewed_at && app.reviewer_ip" class="text-sm text-gray-500">
-                  审核时间：<span x-text="formatDate(app.reviewed_at)"></span> | 
-                  审核人 IP: <span class="font-mono" x-text="app.reviewer_ip"></span>
+                <div x-show="app.reviewed_at && app.reviewer_ip" class="text-sm text-gray-500 pt-2 border-t mt-2">
+                  <div>审核时间：<span x-text="formatDate(app.reviewed_at)"></span></div>
+                  <div>审核人 IP: <span class="font-mono text-xs" x-text="app.reviewer_ip"></span></div>
                 </div>
               </div>
             </template>
@@ -273,10 +277,14 @@
 
         async logout() {
           if (this.sessionId) {
-            await fetch('api/admin/logout', {
-              method: 'POST',
-              headers: { 'x-session-id': this.sessionId }
-            });
+            try {
+              await fetch('api/admin/logout', {
+                method: 'POST',
+                headers: { 'x-session-id': this.sessionId }
+              });
+            } catch (e) {
+              console.error('Logout error:', e);
+            }
           }
           
           this.sessionId = null;
@@ -284,6 +292,8 @@
           localStorage.removeItem('arxiv-admin-session');
           this.stats = {};
           this.applications = [];
+          this.loginForm.username = '';
+          this.loginForm.password = '';
         },
 
         async loadStats() {

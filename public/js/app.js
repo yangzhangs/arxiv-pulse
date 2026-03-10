@@ -109,15 +109,14 @@ function paperApp() {
     },
 
     formatAbstract(abstract) {
-      if (!abstract) return '暂无摘要';
+      if (!abstract) return '暂无简介';
       
-      // 双行格式：[EN] xxx\n\n[CN] yyy
+      // 双行格式：[EN] xxx\n\n[CN] yyy - 只显示中文
       if (abstract.includes('[EN]') && abstract.includes('[CN]')) {
         const parts = abstract.split('\n\n');
         if (parts.length >= 2) {
-          const enPart = parts[0].replace('[EN]', '').trim();
           const cnPart = parts[1].replace('[CN]', '').trim();
-          return `<div class="text-gray-700 mb-1">${enPart}</div><div class="text-gray-500 text-sm">${cnPart}</div>`;
+          return `<div class="text-gray-700">${cnPart}</div>`;
         }
       }
       
