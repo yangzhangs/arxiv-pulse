@@ -147,6 +147,13 @@
             <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>
 
+          <div x-show="!applicationsLoading && applications.length === 0" class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <p class="mt-4 text-gray-600">暂无申请记录</p>
+          </div>
+
           <div x-show="!applicationsLoading" class="space-y-4">
             <template x-for="app in applications" :key="app.id">
               <div class="border rounded-lg p-4">
@@ -192,10 +199,6 @@
                 </div>
               </div>
             </template>
-            
-            <div x-show="!applicationsLoading && applications.length === 0" class="text-center py-8 text-gray-600">
-              暂无申请记录
-            </div>
           </div>
         </div>
       </div>

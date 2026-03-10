@@ -53,20 +53,33 @@ function fixAuthors(authors) {
 }
 
 /**
- * 生成中文摘要（简化版：提取关键信息）
+ * 生成双行摘要（英文 + 中文）
  * 实际生产中可集成翻译 API
  * @param {string} abstract - 英文摘要
  * @param {string} title - 标题
- * @returns {string} - 中文摘要
+ * @returns {string} - 双行摘要
  */
-function generateChineseAbstract(abstract, title) {
-  // 这是一个简化实现，实际应该调用翻译 API
-  // 目前返回英文摘要，前端显示时再做处理
-  
+function generateBilingualAbstract(abstract, title) {
   // 提取第一句作为核心内容
   const firstSentence = abstract.split('.')[0] || abstract.substring(0, 200);
   
-  return `[英文摘要] ${firstSentence}`;
+  // 简单关键词翻译
+  const termMap = {
+    'self-evolving': '自进化',
+    'language agent': '语言代理',
+    'multi-agent': '多代理',
+    'benchmark': '基准测试',
+    'code completion': '代码补全',
+    'latency': '延迟',
+    'accuracy': '准确性'
+  };
+  
+  let chineseTranslation = firstSentence;
+  for (const [en, zh] of Object.entries(termMap)) {
+    chineseTranslation = chineseTranslation.replace(new RegExp(en, 'gi'), zh);
+  }
+  
+  return `[EN] ${firstSentence}\n\n[CN] ${chineseTranslation}...`;
 }
 
 /**
@@ -119,8 +132,8 @@ function importFromJson(jsonFile, strictMode = true) {
         // 修复作者信息
         const authors = fixAuthors(paper.authors || paper.author);
         
-        // 生成中文摘要
-        const chineseAbstract = generateChineseAbstract(
+        // 生成双行摘要（英文 + 中文）
+        const bilingualAbstract = generateBilingualAbstract(
           paper.abstract || paper.summary || '',
           paper.title
         );
@@ -129,7 +142,7 @@ function importFromJson(jsonFile, strictMode = true) {
           arxiv_id: paper.arxiv_id || paper.id,
           title: paper.title,
           authors: authors,
-          abstract: chineseAbstract,
+          abstract: bilingualAbstract,
           pdf_url: paper.pdf_url,
           arxiv_url: paper.arxiv_url || paper.link,
           published_date: paper.published_date || paper.published

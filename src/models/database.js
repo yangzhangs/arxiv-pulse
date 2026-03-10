@@ -342,28 +342,29 @@ class PaperDatabase {
     const searchTerm = `%${query}%`;
     const strongRelatedWhere = this.getStrongRelatedWhereClause();
     
+    // 只搜索标题和摘要，不搜索作者
     const papers = this.db.prepare(`
       SELECT p.*, GROUP_CONCAT(t.name) as tags
       FROM papers p
       LEFT JOIN paper_tags pt ON p.id = pt.paper_id
       LEFT JOIN tags t ON pt.tag_id = t.id
-      WHERE (p.title LIKE ? OR p.authors LIKE ? OR p.abstract LIKE ?)
+      WHERE (p.title LIKE ? OR p.abstract LIKE ?)
         AND (${strongRelatedWhere})
         AND (t.is_approved = 1 OR t.is_approved IS NULL)
       GROUP BY p.id
       ORDER BY p.published_date DESC
       LIMIT ? OFFSET ?
-    `).all(searchTerm, searchTerm, searchTerm, limit, offset);
+    `).all(searchTerm, searchTerm, limit, offset);
 
     const total = this.db.prepare(`
       SELECT COUNT(DISTINCT p.id) as count
       FROM papers p
       LEFT JOIN paper_tags pt ON p.id = pt.paper_id
       LEFT JOIN tags t ON pt.tag_id = t.id
-      WHERE (p.title LIKE ? OR p.authors LIKE ? OR p.abstract LIKE ?)
+      WHERE (p.title LIKE ? OR p.abstract LIKE ?)
         AND (${strongRelatedWhere})
         AND (t.is_approved = 1 OR t.is_approved IS NULL)
-    `).get(searchTerm, searchTerm, searchTerm);
+    `).get(searchTerm, searchTerm);
 
     return {
       papers,

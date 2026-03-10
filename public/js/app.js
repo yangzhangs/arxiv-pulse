@@ -109,15 +109,19 @@ function paperApp() {
     },
 
     formatAbstract(abstract) {
-      // 处理中文摘要格式
       if (!abstract) return '暂无摘要';
       
-      // 如果是英文摘要，添加提示
-      if (abstract.startsWith('[英文摘要]')) {
-        return abstract.replace('[英文摘要]', '');
+      // 双行格式：[EN] xxx\n\n[CN] yyy
+      if (abstract.includes('[EN]') && abstract.includes('[CN]')) {
+        const parts = abstract.split('\n\n');
+        if (parts.length >= 2) {
+          const enPart = parts[0].replace('[EN]', '').trim();
+          const cnPart = parts[1].replace('[CN]', '').trim();
+          return `<div class="text-gray-700 mb-1">${enPart}</div><div class="text-gray-500 text-sm">${cnPart}</div>`;
+        }
       }
       
-      // 如果是中文摘要，直接返回
+      // 旧格式兼容
       if (abstract.startsWith('[中文摘要]')) {
         return abstract.replace('[中文摘要]', '');
       }
