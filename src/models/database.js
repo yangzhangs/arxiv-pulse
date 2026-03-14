@@ -87,11 +87,11 @@ class PaperDatabase {
       CREATE INDEX IF NOT EXISTS idx_tag_applications_status ON tag_applications(status);
     `);
 
-    // 插入默认标签
+    // 插入默认标签（全部英文）
     const defaultTags = [
-      'Docker', 'CI/CD', 'DevOps', '微服务', '云原生', 
+      'Docker', 'CI/CD', 'DevOps', 'Microservices', 'Cloud Native',
       'Serverless', 'Hugging Face', 'Github Actions', 
-      'Agent skills', '弃用包'
+      'Agent skills', 'Deprecated Packages'
     ];
 
     const insertTag = this.db.prepare('INSERT OR IGNORE INTO tags (name, is_approved) VALUES (?, 1)');
