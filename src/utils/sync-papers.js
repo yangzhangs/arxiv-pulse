@@ -54,13 +54,13 @@ function fixAuthors(authors) {
 }
 
 /**
- * 生成双行摘要（英文 + 中文）
+ * 生成中文摘要
  * 实际生产中可集成翻译 API
  * @param {string} abstract - 英文摘要
  * @param {string} title - 标题
- * @returns {string} - 双行摘要
+ * @returns {string} - 中文摘要
  */
-function generateBilingualAbstract(abstract, title) {
+function generateChineseAbstract(abstract, title) {
   // 提取第一句作为核心内容
   const firstSentence = abstract.split('.')[0] || abstract.substring(0, 200);
   
@@ -80,7 +80,7 @@ function generateBilingualAbstract(abstract, title) {
     chineseTranslation = chineseTranslation.replace(new RegExp(en, 'gi'), zh);
   }
   
-  return `[EN] ${firstSentence}\n\n[CN] ${chineseTranslation}...`;
+  return `[中文摘要] ${chineseTranslation}...`;
 }
 
 /**
@@ -128,8 +128,8 @@ function importFromJson(jsonFile, strictMode = true) {
         // 修复作者信息
         const authors = fixAuthors(paper.authors || paper.author);
         
-        // 生成双行摘要（英文 + 中文）
-        const bilingualAbstract = generateBilingualAbstract(
+        // 生成中文摘要
+        const chineseAbstract = generateChineseAbstract(
           paper.abstract || paper.summary || '',
           paper.title
         );
@@ -138,7 +138,7 @@ function importFromJson(jsonFile, strictMode = true) {
           arxiv_id: paper.arxiv_id || paper.id,
           title: paper.title,
           authors: authors,
-          abstract: bilingualAbstract,
+          abstract: chineseAbstract,
           pdf_url: paper.pdf_url,
           arxiv_url: paper.arxiv_url || paper.link,
           published_date: paper.published_date || paper.published

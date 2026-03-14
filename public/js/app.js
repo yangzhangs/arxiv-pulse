@@ -108,13 +108,10 @@ function paperApp() {
     formatAbstract(abstract) {
       if (!abstract) return '暂无简介';
       
-      // 双行格式：[EN] xxx\n\n[CN] yyy - 只显示中文
+      // 只显示中文摘要
       if (abstract.includes('[EN]') && abstract.includes('[CN]')) {
-        const parts = abstract.split('\n\n');
-        if (parts.length >= 2) {
-          const cnPart = parts[1].replace('[CN]', '').trim();
-          return `<div class="text-gray-700">${cnPart}</div>`;
-        }
+        const cnPart = abstract.split('[CN]')[1].trim();
+        return `<div class="text-gray-700">${cnPart}</div>`;
       }
       
       // 旧格式兼容
