@@ -3,6 +3,23 @@
  * 显示中文摘要，支持所有强相关论文展示
  */
 
+// 语言切换函数
+function switchLang(lang) {
+  fetch(`/arxiv-pulse/api/set-lang?lang=${lang}`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        localStorage.setItem('lang', lang);
+        location.reload();
+      }
+    });
+}
+
+// 获取当前语言
+function getCurrentLang() {
+  return localStorage.getItem('lang') || 'zh';
+}
+
 function paperApp() {
   return {
     papers: [],
@@ -17,6 +34,7 @@ function paperApp() {
       total: 0,
       totalPages: 0
     },
+    currentLang: getCurrentLang(),
 
     async init() {
       // 从 URL 获取初始标签

@@ -1,0 +1,185 @@
+/**
+ * 国际化配置
+ */
+
+const i18n = {
+  zh: {
+    // 导航
+    siteName: 'ArxivPulse',
+    siteTagline: '(only for RESET group)',
+    navHome: '首页',
+    navTags: '标签',
+    navAbout: '关于',
+    navAdmin: '管理后台',
+    navLogout: '登出',
+    
+    // 首页
+    homeTitle: 'Arxiv 学术文章',
+    homeSubtitle: '每日自动同步最新 Software Engineering 领域论文',
+    searchPlaceholder: '搜索标题...',
+    filterByTag: '按标签筛选',
+    allTags: '全部标签',
+    noPapers: '暂无论文',
+    publishedDate: '发表日期',
+    authors: '作者',
+    viewDetails: '查看详情',
+    pdf: 'PDF',
+    arxiv: 'Arxiv',
+    acceptedAt: '录用于',
+    
+    // 标签页面
+    tagsTitle: '标签管理',
+    tagsSubtitle: '管理和筛选学术文章标签',
+    applyTagTitle: '申请添加你感兴趣的标签',
+    applyTagTip: '💡 提交标签申请后，需要管理员审核通过才能添加到标签列表。请确保标签与 Software Engineering 领域相关。',
+    applyTagPlaceholder: '标签名称（如：Machine Learning）',
+    applyTagSubmit: '提交申请',
+    applying: '提交中...',
+    allTags: '所有标签',
+    noTags: '暂无标签',
+    view: '查看',
+    
+    // 关于页面
+    aboutTitle: '关于 ArxivPulse',
+    aboutIntro: 'ArxivPulse 是一个简洁美观的学术文章展示网站，每日自动同步最新 Software Engineering 领域的论文。',
+    featuresTitle: '核心功能',
+    featureAutoSync: '自动同步：每日自动获取 arxiv 最新论文',
+    featureTagFilter: '标签筛选：支持多标签分类和筛选',
+    featureSearch: '全文搜索：支持标题、作者、摘要搜索',
+    featureResponsive: '响应式设计：支持桌面和移动端',
+    featurePush: '消息推送：飞书定时推送整理后的文章',
+    featureExtension: '标签扩展：支持动态添加新标签',
+    licenseTitle: '许可证',
+    licenseText: '本项目采用',
+    githubRepo: 'GitHub 仓库',
+    
+    // 管理后台
+    adminTitle: '管理后台',
+    adminLoginTitle: '管理员登录',
+    adminUsername: '用户名',
+    adminPassword: '密码',
+    adminLoginBtn: '登录',
+    adminLoggingIn: '登录中...',
+    adminStatsTotalPapers: '总论文数',
+    adminStatsTotalTags: '标签数量',
+    adminStatsPendingApps: '待审核申请',
+    adminStatsRecentPapers: '近 7 天新增',
+    adminTagManage: '管理标签',
+    adminTagManageTitle: '标签管理',
+    adminTagAdd: '添加',
+    adminTagName: '标签名称',
+    adminTagColor: '颜色',
+    adminTagEdit: '编辑',
+    adminTagDelete: '删除',
+    adminAppReviewTitle: '标签申请审核',
+    adminAppFilterAll: '全部',
+    adminAppFilterPending: '待审核',
+    adminAppFilterApproved: '已通过',
+    adminAppFilterRejected: '已拒绝',
+    adminAppApprove: '通过',
+    adminAppReject: '拒绝',
+    adminAppStatus: '状态',
+    adminAppDate: '申请时间',
+    adminAppAction: '操作',
+    
+    // 通用
+    loading: '加载中...',
+    error: '错误',
+    success: '成功',
+    cancel: '取消',
+    confirm: '确认',
+    deleteConfirm: '确定要删除吗？',
+    backToHome: '返回首页'
+  },
+  
+  en: {
+    // Navigation
+    siteName: 'ArxivPulse',
+    siteTagline: '(only for RESET group)',
+    navHome: 'Home',
+    navTags: 'Tags',
+    navAbout: 'About',
+    navAdmin: 'Admin',
+    navLogout: 'Logout',
+    
+    // Home
+    homeTitle: 'Arxiv Papers',
+    homeSubtitle: 'Daily automatic sync of latest Software Engineering papers',
+    searchPlaceholder: 'Search title...',
+    filterByTag: 'Filter by tag',
+    allTags: 'All Tags',
+    noPapers: 'No papers',
+    publishedDate: 'Published',
+    authors: 'Authors',
+    viewDetails: 'View Details',
+    pdf: 'PDF',
+    arxiv: 'Arxiv',
+    acceptedAt: 'Accepted at',
+    
+    // Tags
+    tagsTitle: 'Tags',
+    tagsSubtitle: 'Manage and filter paper tags',
+    applyTagTitle: 'Request a New Tag',
+    applyTagTip: '💡 After submitting a tag request, it needs admin approval before being added. Please ensure the tag is related to Software Engineering.',
+    applyTagPlaceholder: 'Tag name (e.g., Machine Learning)',
+    applyTagSubmit: 'Submit',
+    applying: 'Submitting...',
+    allTags: 'All Tags',
+    noTags: 'No tags',
+    view: 'View',
+    
+    // About
+    aboutTitle: 'About ArxivPulse',
+    aboutIntro: 'ArxivPulse is a clean and beautiful academic paper display website that automatically syncs the latest Software Engineering papers daily.',
+    featuresTitle: 'Features',
+    featureAutoSync: 'Auto Sync: Daily automatic fetch of latest arxiv papers',
+    featureTagFilter: 'Tag Filter: Multi-tag classification and filtering',
+    featureSearch: 'Full-text Search: Search by title, author, abstract',
+    featureResponsive: 'Responsive Design: Desktop and mobile support',
+    featurePush: 'Push Notifications: Scheduled Feishu notifications',
+    featureExtension: 'Tag Extension: Dynamic tag addition support',
+    licenseTitle: 'License',
+    licenseText: 'This project is licensed under the',
+    githubRepo: 'GitHub Repository',
+    
+    // Admin
+    adminTitle: 'Admin Dashboard',
+    adminLoginTitle: 'Admin Login',
+    adminUsername: 'Username',
+    adminPassword: 'Password',
+    adminLoginBtn: 'Login',
+    adminLoggingIn: 'Logging in...',
+    adminStatsTotalPapers: 'Total Papers',
+    adminStatsTotalTags: 'Total Tags',
+    adminStatsPendingApps: 'Pending Applications',
+    adminStatsRecentPapers: 'Recent 7 Days',
+    adminTagManage: 'Manage Tags',
+    adminTagManageTitle: 'Tag Management',
+    adminTagAdd: 'Add',
+    adminTagName: 'Tag Name',
+    adminTagColor: 'Color',
+    adminTagEdit: 'Edit',
+    adminTagDelete: 'Delete',
+    adminAppReviewTitle: 'Tag Applications',
+    adminAppFilterAll: 'All',
+    adminAppFilterPending: 'Pending',
+    adminAppFilterApproved: 'Approved',
+    adminAppFilterRejected: 'Rejected',
+    adminAppApprove: 'Approve',
+    adminAppReject: 'Reject',
+    adminAppStatus: 'Status',
+    adminAppDate: 'Date',
+    adminAppAction: 'Action',
+    
+    // Common
+    loading: 'Loading...',
+    error: 'Error',
+    success: 'Success',
+    cancel: 'Cancel',
+    confirm: 'Confirm',
+    deleteConfirm: 'Are you sure you want to delete?',
+    backToHome: 'Back to Home'
+  }
+};
+
+module.exports = i18n;

@@ -10,6 +10,7 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
@@ -19,6 +20,11 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// 国际化中间件
+const i18nMiddleware = require('./middleware/i18n');
+app.use(i18nMiddleware);
 
 // 静态文件
 app.use(express.static(path.join(__dirname, '../public')));
@@ -84,6 +90,17 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
+});
+
+// 语言切换 API
+app.get('/api/set-lang', (req, res) => {
+  const lang = req.query.lang;
+  if (lang && (lang === 'zh' || lang === 'en')) {
+    res.cookie('lang', lang, { maxAge: 365 * 24 * 60 * 60 * 1000, httpOnly: false });
+    res.json({ success: true, lang });
+  } else {
+    res.status(400).json({ error: 'Invalid language' });
+  }
 });
 
 // 启动服务器
