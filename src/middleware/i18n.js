@@ -11,6 +11,7 @@ const i18nMiddleware = (req, res, next) => {
   // 确保语言设置有效
   req.lang = (lang === 'en' || lang === 'zh') ? lang : 'zh';
   req.t = (key) => i18n[req.lang][key] || key;
+  req.i18n = i18n[req.lang];
   
   next();
 };

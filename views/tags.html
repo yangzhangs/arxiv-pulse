@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>标签管理 - ArxivPulse</title>
+  <title x-text="t.tagsTitle || '标签管理'">标签管理 - ArxivPulse</title>
   <base href=".">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
@@ -38,15 +38,15 @@
         x-init="init()">
     
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">标签管理</h1>
-      <p class="text-gray-600">管理和筛选学术文章标签</p>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2" x-text="t.tagsTitle || '标签管理'">标签管理</h1>
+      <p class="text-gray-600" x-text="t.tagsSubtitle || '管理和筛选学术文章标签'">管理和筛选学术文章标签</p>
     </div>
 
     <!-- 申请新标签 -->
     <div class="bg-white rounded-lg shadow-sm border p-6 mb-8">
-      <h2 class="text-lg font-semibold mb-4">申请添加你感兴趣的标签</h2>
+      <h2 class="text-lg font-semibold mb-4" x-text="t.applyTagTitle || '申请添加你感兴趣的标签'">申请添加你感兴趣的标签</h2>
       <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-        <p class="text-sm text-blue-700">
+        <p class="text-sm text-blue-700" x-text="t.applyTagTip || '💡 提交标签申请后，需要管理员审核通过才能添加到标签列表。请确保标签与 Software Engineering 领域相关。'">
           💡 提交标签申请后，需要管理员审核通过才能添加到标签列表。请确保标签与 Software Engineering 领域相关。
         </p>
       </div>
@@ -54,7 +54,7 @@
         <input 
           type="text" 
           x-model="newTagName"
-          placeholder="标签名称（如：Machine Learning）"
+          :placeholder="t.applyTagPlaceholder || '标签名称（如：Machine Learning）'"
           class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           @keyup.enter="applyTag()"
         >
@@ -63,8 +63,8 @@
           :disabled="submitting"
           class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <span x-show="!submitting">提交申请</span>
-          <span x-show="submitting">提交中...</span>
+          <span x-show="!submitting" x-text="t.applyTagSubmit || '提交申请'">提交申请</span>
+          <span x-show="submitting" x-text="t.applying || '提交中...'">提交中...</span>
         </button>
       </div>
     </div>
@@ -72,7 +72,7 @@
     <!-- 已通过的标签列表 -->
     <div class="bg-white rounded-lg shadow-sm border mb-8">
       <div class="p-6 border-b">
-        <h2 class="text-lg font-semibold">所有标签 (<span x-text="tags.length"></span>)</h2>
+        <h2 class="text-lg font-semibold" x-text="(t.allTagsList || '所有标签') + ' (' + tags.length + ')'">所有标签</h2>
       </div>
       
       <div class="p-6">
@@ -91,6 +91,7 @@
                 <a 
                   :href="'./?tag=' + tag.name"
                   class="text-sm text-blue-600 hover:underline"
+                  x-text="t.view || '查看'"
                 >
                   查看
                 </a>
@@ -100,7 +101,7 @@
         </div>
 
         <div x-show="!loading && tags.length === 0" class="text-center py-8 text-gray-600">
-          暂无标签
+          <span x-text="t.noTags || '暂无标签'">暂无标签</span>
         </div>
       </div>
     </div>
@@ -113,8 +114,11 @@
         loading: false,
         submitting: false,
         newTagName: '',
+        currentLang: getCurrentLang(),
+        t: {},
 
         async init() {
+          this.t = await loadTranslations(this.currentLang);
           await this.loadTags();
         },
 

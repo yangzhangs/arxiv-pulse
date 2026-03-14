@@ -35,7 +35,7 @@ const i18n = {
     applyTagPlaceholder: '标签名称（如：Machine Learning）',
     applyTagSubmit: '提交申请',
     applying: '提交中...',
-    allTags: '所有标签',
+    allTagsList: '所有标签',
     noTags: '暂无标签',
     view: '查看',
     
@@ -89,7 +89,8 @@ const i18n = {
     cancel: '取消',
     confirm: '确认',
     deleteConfirm: '确定要删除吗？',
-    backToHome: '返回首页'
+    backToHome: '返回首页',
+    adminLogout: '登出'
   },
   
   en: {
@@ -124,7 +125,7 @@ const i18n = {
     applyTagPlaceholder: 'Tag name (e.g., Machine Learning)',
     applyTagSubmit: 'Submit',
     applying: 'Submitting...',
-    allTags: 'All Tags',
+    allTagsList: 'All Tags',
     noTags: 'No tags',
     view: 'View',
     
@@ -178,7 +179,8 @@ const i18n = {
     cancel: 'Cancel',
     confirm: 'Confirm',
     deleteConfirm: 'Are you sure you want to delete?',
-    backToHome: 'Back to Home'
+    backToHome: 'Back to Home',
+    adminLogout: 'Logout'
   }
 };
 

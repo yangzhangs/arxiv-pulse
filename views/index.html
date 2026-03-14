@@ -18,17 +18,17 @@
           <a href="." class="flex items-center space-x-2">
             <span class="text-2xl">📚</span>
             <div class="flex flex-col">
-              <span class="font-bold text-xl text-gray-900">ArxivPulse</span>
-              <span class="text-xs text-gray-500">(only for RESET group)</span>
+              <span class="font-bold text-xl text-gray-900" x-text="t.siteName || 'ArxivPulse'">ArxivPulse</span>
+              <span class="text-xs text-gray-500" x-text="t.siteTagline || '(only for RESET group)'">(only for RESET group)</span>
             </div>
           </a>
         </div>
         
         <!-- 桌面导航 -->
         <div class="hidden md:flex items-center space-x-8">
-          <a href="." class="text-blue-600 font-medium">首页</a>
-          <a href="tags" class="text-gray-600 hover:text-gray-900">标签</a>
-          <a href="about" class="text-gray-600 hover:text-gray-900">关于</a>
+          <a href="." class="text-blue-600 font-medium" x-text="t.navHome || '首页'">首页</a>
+          <a href="tags" class="text-gray-600 hover:text-gray-900" x-text="t.navTags || '标签'">标签</a>
+          <a href="about" class="text-gray-600 hover:text-gray-900" x-text="t.navAbout || '关于'">关于</a>
           
           <!-- 语言切换 -->
           <div class="flex items-center space-x-2 border-l pl-4">
@@ -71,7 +71,7 @@
             type="text" 
             x-model="searchQuery"
             @input.debounce.300ms="search()"
-            placeholder="搜索标题..."
+            :placeholder="t.searchPlaceholder || '搜索标题...'"
             class="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
           <svg class="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -84,7 +84,7 @@
             @change="filterByTag()"
             class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
-            <option value="">所有标签</option>
+            <option value="" x-text="t.allTags || '所有标签'">所有标签</option>
             <template x-for="tag in tags" :key="tag.id">
               <option :value="tag.name" x-text="tag.name"></option>
             </template>
@@ -98,9 +98,11 @@
     <!-- 统计信息 -->
     <div class="mb-6 flex items-center justify-between">
       <p class="text-gray-600">
-        共 <span class="font-semibold text-gray-900" x-text="pagination.total"></span> 篇强相关论文
+        <span x-text="t.noPapers ? '共 ' + pagination.total + ' 篇' : '共 ' + pagination.total + ' 篇'">共</span>
+        <span class="font-semibold text-gray-900" x-text="pagination.total"></span>
+        <span x-text="t.noPapers ? '' : '篇'">篇</span>
         <span x-show="selectedTag" class="ml-2 text-blue-600">
-          · 标签：<span x-text="selectedTag"></span>
+          · <span x-text="t.navTags || '标签'">标签</span>：<span x-text="selectedTag"></span>
         </span>
       </p>
       <div class="flex items-center space-x-2">
@@ -109,17 +111,17 @@
           :disabled="currentPage <= 1"
           class="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
         >
-          上一页
+          <span x-text="t.navHome === '首页' ? '上一页' : 'Previous'">上一页</span>
         </button>
         <span class="text-gray-600">
-          第 <span x-text="currentPage"></span> / <span x-text="pagination.totalPages || 1"></span> 页
+          <span x-text="t.currentLang === 'zh' ? '第 ' + currentPage + ' / ' + (pagination.totalPages || 1) + ' 页' : 'Page ' + currentPage + ' / ' + (pagination.totalPages || 1)">第</span>
         </span>
         <button 
           @click="currentPage++" 
           :disabled="currentPage >= pagination.totalPages"
           class="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
         >
-          下一页
+          <span x-text="t.navHome === '首页' ? '下一页' : 'Next'">下一页</span>
         </button>
       </div>
     </div>
@@ -127,7 +129,7 @@
     <!-- 加载状态 -->
     <div x-show="loading" class="text-center py-12">
       <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      <p class="mt-4 text-gray-600">加载中...</p>
+      <p class="mt-4 text-gray-600" x-text="t.loading || '加载中...'">加载中...</p>
     </div>
 
     <!-- 论文列表 -->

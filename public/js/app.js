@@ -20,6 +20,18 @@ function getCurrentLang() {
   return localStorage.getItem('lang') || 'zh';
 }
 
+// 加载翻译
+async function loadTranslations(lang) {
+  try {
+    const response = await fetch(`/arxiv-pulse/api/i18n?lang=${lang}`);
+    const data = await response.json();
+    return data.translations || {};
+  } catch (error) {
+    console.error('Failed to load translations:', error);
+    return {};
+  }
+}
+
 function paperApp() {
   return {
     papers: [],
@@ -35,8 +47,12 @@ function paperApp() {
       totalPages: 0
     },
     currentLang: getCurrentLang(),
+    t: {},
 
     async init() {
+      // 加载翻译
+      this.t = await loadTranslations(this.currentLang);
+      
       // 从 URL 获取初始标签
       const urlParams = new URLSearchParams(window.location.search);
       this.selectedTag = urlParams.get('tag') || '';

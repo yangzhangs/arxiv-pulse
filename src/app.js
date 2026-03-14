@@ -103,6 +103,16 @@ app.get('/api/set-lang', (req, res) => {
   }
 });
 
+// 获取翻译 API
+app.get('/api/i18n', (req, res) => {
+  const lang = req.query.lang || 'zh';
+  if (i18n[lang]) {
+    res.json({ lang, translations: i18n[lang] });
+  } else {
+    res.status(400).json({ error: 'Invalid language' });
+  }
+});
+
 // 启动服务器
 app.listen(PORT, '127.0.0.1', () => {
   console.log(`
