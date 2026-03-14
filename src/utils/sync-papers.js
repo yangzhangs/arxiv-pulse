@@ -141,7 +141,8 @@ function importFromJson(jsonFile, strictMode = true) {
           abstract: chineseAbstract,
           pdf_url: paper.pdf_url,
           arxiv_url: paper.arxiv_url || paper.link,
-          published_date: paper.published_date || paper.published
+          published_date: paper.published_date || paper.published,
+          submitted_date: paper.submitted_date || paper.published_date || paper.published
         });
 
         if (result.changes > 0) {
