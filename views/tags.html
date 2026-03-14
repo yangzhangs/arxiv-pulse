@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>标签管理 - ArxivPulse</title>
-  <base href="/arxiv-pulse/">
+  <base href=".">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
@@ -42,33 +42,6 @@
       <p class="text-gray-600">管理和筛选学术文章标签</p>
     </div>
 
-    <!-- 申请新标签 -->
-    <div class="bg-white rounded-lg shadow-sm border p-6 mb-8">
-      <h2 class="text-lg font-semibold mb-4">申请添加你感兴趣的标签</h2>
-      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-        <p class="text-sm text-blue-700">
-          💡 提交标签申请后，需要管理员审核通过才能添加到标签列表。请确保标签与 Software Engineering 领域相关。
-        </p>
-      </div>
-      <div class="flex flex-col sm:flex-row gap-4">
-        <input 
-          type="text" 
-          x-model="newTagName"
-          placeholder="标签名称（如：Machine Learning）"
-          class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          @keyup.enter="applyTag()"
-        >
-        <button 
-          @click="applyTag()"
-          :disabled="submitting"
-          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <span x-show="!submitting">提交申请</span>
-          <span x-show="submitting">提交中...</span>
-        </button>
-      </div>
-    </div>
-
     <!-- 已通过的标签列表 -->
     <div class="bg-white rounded-lg shadow-sm border mb-8">
       <div class="p-6 border-b">
@@ -104,49 +77,16 @@
         </div>
       </div>
     </div>
-
-    <!-- 我的申请记录 -->
-    <div class="bg-white rounded-lg shadow-sm border" x-show="applications.length > 0">
-      <div class="p-6 border-b">
-        <h2 class="text-lg font-semibold">我的申请记录</h2>
-      </div>
-      
-      <div class="p-6">
-        <div class="space-y-3">
-          <template x-for="app in applications" :key="app.id">
-            <div class="flex items-center justify-between p-4 border rounded-lg">
-              <div class="flex items-center space-x-3">
-                <span class="font-medium" x-text="app.name"></span>
-                <span 
-                  class="px-2 py-1 text-xs rounded-full"
-                  :class="{
-                    'bg-yellow-100 text-yellow-700': app.status === 'pending',
-                    'bg-green-100 text-green-700': app.status === 'approved',
-                    'bg-red-100 text-red-700': app.status === 'rejected'
-                  }"
-                  x-text="statusText(app.status)"
-                ></span>
-              </div>
-              <span class="text-sm text-gray-500" x-text="formatDate(app.created_at)"></span>
-            </div>
-          </template>
-        </div>
-      </div>
-    </div>
   </main>
 
   <script>
     function tagsApp() {
       return {
         tags: [],
-        applications: [],
         loading: false,
-        submitting: false,
-        newTagName: '',
 
         async init() {
           await this.loadTags();
-          this.loadApplications();
         },
 
         async loadTags() {
@@ -162,78 +102,7 @@
           }
         },
 
-        loadApplications() {
-          // 从 localStorage 加载申请记录
-          const saved = localStorage.getItem('arxiv-tag-applications');
-          if (saved) {
-            this.applications = JSON.parse(saved);
-          }
-        },
 
-        saveApplication(app) {
-          this.applications.unshift(app);
-          localStorage.setItem('arxiv-tag-applications', JSON.stringify(this.applications));
-        },
-
-        async applyTag() {
-          if (!this.newTagName.trim()) {
-            alert('请输入标签名称');
-            return;
-          }
-
-          this.submitting = true;
-          try {
-            const response = await fetch('api/tags/apply', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                name: this.newTagName.trim()
-              })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-              // 保存申请记录
-              this.saveApplication({
-                id: data.applicationId,
-                name: this.newTagName.trim(),
-                status: 'pending',
-                created_at: new Date().toISOString()
-              });
-              
-              this.newTagName = '';
-              alert('标签申请已提交，等待管理员审核！');
-            } else {
-              alert('申请失败：' + (data.error || '未知错误'));
-            }
-          } catch (error) {
-            console.error('Failed to apply tag:', error);
-            alert('申请失败：' + error.message);
-          } finally {
-            this.submitting = false;
-          }
-        },
-
-        statusText(status) {
-          const map = {
-            'pending': '审核中',
-            'approved': '已通过',
-            'rejected': '已拒绝'
-          };
-          return map[status] || status;
-        },
-
-        formatDate(dateStr) {
-          const date = new Date(dateStr);
-          return date.toLocaleDateString('zh-CN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-          });
-        }
       }
     }
   </script>

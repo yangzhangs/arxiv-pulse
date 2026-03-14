@@ -27,10 +27,19 @@ app.use(express.static(path.join(__dirname, '../public')));
 const papersRouter = require('./routes/papers');
 const tagsRouter = require('./routes/tags');
 const adminRouter = require('./routes/admin');
+const tagsAdminRouter = require('./routes/tags-admin');
 
+// API 路由 - 支持两种路径：/api/* 和 /arxiv-pulse/api/*
 app.use('/api/papers', papersRouter);
 app.use('/api/tags', tagsRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/tags-admin', tagsAdminRouter);
+
+// 兼容 nginx 反向代理路径 /arxiv-pulse/api/*
+app.use('/arxiv-pulse/api/papers', papersRouter);
+app.use('/arxiv-pulse/api/tags', tagsRouter);
+app.use('/arxiv-pulse/api/admin', adminRouter);
+app.use('/arxiv-pulse/api/tags-admin', tagsAdminRouter);
 
 // 页面路由
 app.get('/', (req, res) => {
@@ -46,6 +55,23 @@ app.get('/about', (req, res) => {
 });
 
 app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, '../views/admin.html'));
+});
+
+// 兼容 nginx 反向代理路径 /arxiv-pulse/*
+app.get('/arxiv-pulse', (req, res) => {
+  res.redirect(301, '/arxiv-pulse/');
+});
+
+app.get('/arxiv-pulse/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../views/index.html'));
+});
+
+app.get('/arxiv-pulse/tags', (req, res) => {
+  res.sendFile(path.join(__dirname, '../views/tags.html'));
+});
+
+app.get('/arxiv-pulse/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../views/admin.html'));
 });
 

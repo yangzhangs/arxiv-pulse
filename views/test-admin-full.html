@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin 功能测试</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+    .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+    .success { color: green; }
+    .error { color: red; }
+    button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Admin 功能测试</h1>
+  
+  <div class="test-section">
+    <h3>1. 测试 API 登录</h3>
+    <button onclick="testLogin()">测试登录</button>
+    <div id="login-result"></div>
+  </div>
+  
+  <div class="test-section">
+    <h3>2. 测试 Stats API</h3>
+    <button onclick="testStats()">测试 Stats</button>
+    <div id="stats-result"></div>
+  </div>
+  
+  <div class="test-section">
+    <h3>3. 测试页面加载</h3>
+    <button onclick="testPageLoad()">测试页面</button>
+    <div id="page-result"></div>
+  </div>
+  
+  <div class="test-section">
+    <h3>4. 检查 Alpine.js 绑定</h3>
+    <button onclick="checkAlpine()">检查 Alpine</button>
+    <div id="alpine-result"></div>
+  </div>
+
+  <script>
+    async function testLogin() {
+      const resultDiv = document.getElementById('login-result');
+      resultDiv.innerHTML = '测试中...';
+      
+      try {
+        const response = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: 'admin', password: 'admin123' })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+          resultDiv.innerHTML = '<span class="success">✅ 登录成功<br>Session: ' + data.sessionId + '</span>';
+          window.testSessionId = data.sessionId;
+        } else {
+          resultDiv.innerHTML = '<span class="error">❌ 登录失败：' + (data.error || '未知错误') + '</span>';
+        }
+      } catch (error) {
+        resultDiv.innerHTML = '<span class="error">❌ 请求失败：' + error.message + '</span>';
+      }
+    }
+    
+    async function testStats() {
+      const resultDiv = document.getElementById('stats-result');
+      resultDiv.innerHTML = '测试中...';
+      
+      if (!window.testSessionId) {
+        resultDiv.innerHTML = '<span class="error">❌ 请先登录获取 sessionId</span>';
+        return;
+      }
+      
+      try {
+        const response = await fetch('/api/admin/stats', {
+          headers: { 'x-session-id': window.testSessionId }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          resultDiv.innerHTML = '<span class="success">✅ Stats 成功<br>' + 
+            '总论文数：' + data.totalPapers + '<br>' +
+            '标签数量：' + data.totalTags + '<br>' +
+            '近 7 天新增：' + data.recentPapers + '</span>';
+        } else {
+          resultDiv.innerHTML = '<span class="error">❌ Stats 失败：' + (data.error || '未知错误') + '</span>';
+        }
+      } catch (error) {
+        resultDiv.innerHTML = '<span class="error">❌ 请求失败：' + error.message + '</span>';
+      }
+    }
+    
+    function testPageLoad() {
+      const resultDiv = document.getElementById('page-result');
+      resultDiv.innerHTML = '测试中...';
+      
+      fetch('/admin')
+        .then(r => r.text())
+        .then(html => {
+          if (html.includes('x-data="adminApp()"')) {
+            resultDiv.innerHTML = '<span class="success">✅ 页面包含 x-data 绑定</span>';
+          } else {
+            resultDiv.innerHTML = '<span class="error">❌ 页面缺少 x-data 绑定</span>';
+          }
+        })
+        .catch(e => {
+          resultDiv.innerHTML = '<span class="error">❌ 请求失败：' + e.message + '</span>';
+        });
+    }
+    
+    function checkAlpine() {
+      const resultDiv = document.getElementById('alpine-result');
+      
+      if (typeof Alpine !== 'undefined') {
+        resultDiv.innerHTML = '<span class="success">✅ Alpine.js 已加载</span>';
+      } else {
+        resultDiv.innerHTML = '<span class="error">❌ Alpine.js 未加载</span>';
+      }
+    }
+  </script>
+</body>
+</html>

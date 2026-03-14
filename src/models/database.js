@@ -273,6 +273,8 @@ class PaperDatabase {
     if (approved) {
       // 将申请的标签添加到正式标签表
       const tagResult = this.addTag(app.name, app.color, 1);
+      // 删除申请记录
+      this.db.prepare('DELETE FROM tag_applications WHERE id = ?').run(id);
       return { success: true, tagId: tagResult.lastInsertRowid };
     }
     return { success: true, rejected: true };
