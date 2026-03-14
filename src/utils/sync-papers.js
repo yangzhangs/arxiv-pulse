@@ -16,12 +16,13 @@ const path = require('path');
 const fs = require('fs');
 const db = require('../models/database');
 
-// 强相关关键词列表
+// 强相关关键词列表（与 fetch-latest-arxiv.js 保持一致）
 const STRONG_RELATED_KEYWORDS = [
   'Docker', 'CI/CD', 'DevOps', '微服务', '云原生', 
   'Serverless', 'Hugging Face', 'Github Actions', 
   'Agent skills', '弃用包', 'Kubernetes', 'MLOps',
-  '容器', '自动化', '持续集成', '持续部署'
+  '容器', '自动化', '持续集成', '持续部署',
+  'LLM', 'Agent', 'Agents', '大语言模型', '代理'
 ];
 
 /**
@@ -112,13 +113,8 @@ function importFromJson(jsonFile, strictMode = true) {
       ? papers.filter(p => isStrongRelated(p))
       : papers;
     
-    if (strictMode && filteredPapers.length > 10) {
-      console.log(`⚠️  发现 ${filteredPapers.length} 篇强相关论文，但只导入前 10 篇`);
-      console.log(`   其余论文请在网站上查看完整列表\n`);
-    }
-    
-    // 只取前 10 篇
-    const papersToImport = filteredPapers.slice(0, 10);
+    // 网站显示所有强相关论文，没有 10 篇限制
+    const papersToImport = filteredPapers;
 
     papersToImport.forEach(paper => {
       try {
@@ -181,8 +177,8 @@ function importFromJson(jsonFile, strictMode = true) {
     console.log(`   ⚠️  非强相关：${notRelated} 篇`);
     console.log(`   ❌ 导入失败：${skipped} 篇`);
     
-    if (papers.length - filteredPapers.length > 10) {
-      console.log(`\n💡 提示：还有 ${papers.length - filteredPapers.length - 10} 篇强相关论文未在数据库中，请在网站上查看`);
+    if (papers.length - filteredPapers.length > 0) {
+      console.log(`\n💡 提示：还有 ${papers.length - filteredPapers.length} 篇非强相关论文未导入`);
     }
     
     return { imported, skipped, duplicate, notRelated };

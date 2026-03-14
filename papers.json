@@ -1,0 +1,102 @@
+[
+  {
+    "arxiv_id": "2603.03566",
+    "title": "SkillCraft: Can LLM Agents Learn to Use Tools Skillfully?",
+    "authors": ["Shiqi Chen", "Jingze Gai", "Ruochen Zhou", "Jinghan Zhang", "Tongtong Zhu", "Junlong Li", "Kangrui Wang", "Zihan Wang", "Zhengyu Chen", "Klara Kaleb", "Ning Miao", "Siyang Gao", "Cong Lu", "Manling Li", "Junxian He", "Yee Whye Teh"],
+    "submitted": "2026-03-10",
+    "pdf_url": "https://arxiv.org/abs/2603.03566",
+    "abstract": "研究 LLM Agent 如何在长周期工作流中学习抽象和复用工具组合，超越原子工具调用。",
+    "tags": ["Agent skills", "大语言模型", "工具使用"],
+    "fetched_at": "2026-03-12"
+  },
+  {
+    "arxiv_id": "2603.02345",
+    "title": "Can AI Agents Generate Microservices? How Far are We?",
+    "authors": ["Bassam Adnan", "Matteo Esposito", "Davide Taibi", "Karthik Vaidhyanathan"],
+    "submitted": "2026-03-09",
+    "pdf_url": "https://arxiv.org/abs/2603.02345",
+    "abstract": "评估 AI Agent 生成微服务的能力，测试 144 个生成的微服务 across 3 个 Agent、4 个项目。",
+    "tags": ["微服务", "Agent skills", "代码生成"],
+    "fetched_at": "2026-03-12"
+  },
+  {
+    "arxiv_id": "2603.02617",
+    "title": "Building Effective AI Coding Agents for the Terminal: Scaffolding, Harness, Context Engineering, and Lessons Learned",
+    "authors": ["Nghi D. Q. Bui"],
+    "submitted": "2026-03-09",
+    "pdf_url": "https://arxiv.org/abs/2603.02617",
+    "abstract": "介绍 OPENDEV，一个开源命令行 coding Agent，专为终端自主开发任务设计。",
+    "tags": ["AI 辅助开发", "Agent skills", "代码生成"],
+    "fetched_at": "2026-03-12"
+  },
+  {
+    "arxiv_id": "2603.00251",
+    "title": "PostTrainBench: Can LLM Agents Automate LLM Post-Training?",
+    "authors": ["Ben Rank", "Hardik Bhatnagar", "Ameya Prabhu", "Shira Eisenberg", "Karina Nguyen", "Matthias Bethge", "Maksym Andriushchenko"],
+    "submitted": "2026-03-10",
+    "pdf_url": "https://arxiv.org/abs/2603.00251",
+    "abstract": "探索 AI Agent 是否能自动化 AI 研究本身，聚焦 LLM post-training 阶段。",
+    "tags": ["大语言模型", "Agent skills", "MLOps"],
+    "fetched_at": "2026-03-12"
+  },
+  {
+    "arxiv_id": "2603.01541",
+    "title": "SWE-Fuse: Empowering Software Agents via Issue-free Trajectory Learning and Entropy-aware RLVR Training",
+    "authors": ["Xin-Cheng Wen", "Binbin Chen", "Haoxuan Lan", "Hang Yu", "Peng Di", "Cuiyun Gao"],
+    "submitted": "2026-03-08",
+    "pdf_url": "https://arxiv.org/abs/2603.01541",
+    "abstract": "通过无 issue 轨迹学习和熵感知 RLVR 训练增强软件 Agent 能力。",
+    "tags": ["Agent skills", "大语言模型", "软件工程"],
+    "fetched_at": "2026-03-12"
+  },
+  {
+    "arxiv_id": "2603.02141",
+    "title": "AgenticCyOps: Securing Multi-Agentic AI Integration in Enterprise Cyber Operations",
+    "authors": ["Shaswata Mitra", "Raj Patel", "Sudip Mittal", "Md Rayhanur Rahman", "Shahram Rahimi"],
+    "submitted": "2026-03-09",
+    "pdf_url": "https://arxiv.org/abs/2603.02141",
+    "abstract": "提出企业级多 Agent 系统安全架构模型，解决自主 Agent 控制工具/内存/通信的攻击面。",
+    "tags": ["Agent skills", "云原生", "安全"],
+    "fetched_at": "2026-03-12"
+  },
+  {
+    "arxiv_id": "2603.02032",
+    "title": "LDP: An Identity-Aware Protocol for Multi-Agent LLM Systems",
+    "authors": ["Sunil Prakash"],
+    "submitted": "2026-03-09",
+    "pdf_url": "https://arxiv.org/abs/2603.02032",
+    "abstract": "提出 LLM Delegate Protocol (LDP)，将模型身份、推理 profile、质量校准作为一等原语。",
+    "tags": ["Agent skills", "大语言模型", "协议"],
+    "fetched_at": "2026-03-12"
+  },
+  {
+    "arxiv_id": "2603.01896",
+    "title": "Test-Driven AI Agent Definition (TDAD): Compiling Tool-Using Agents from Behavioral Specifications",
+    "authors": ["Tzafrir Rehan"],
+    "submitted": "2026-03-09",
+    "pdf_url": "https://arxiv.org/abs/2603.01896",
+    "abstract": "将 Agent prompt 视为编译产物，通过行为规格→测试→迭代 refine 的方法论。",
+    "tags": ["Agent skills", "自动化测试", "工具使用"],
+    "fetched_at": "2026-03-12"
+  },
+  {
+    "arxiv_id": "2603.00520",
+    "title": "An Empirical Study of Interaction Smells in Multi-Turn Human-LLM Collaborative Code Generation",
+    "authors": ["Binquan Zhang", "Li Zhang", "Lin Shi", "Song Wang", "Yuwei Qian", "Linhui Zhao", "Fang Liu", "An Fu", "Yida Ye"],
+    "submitted": "2026-03-10",
+    "pdf_url": "https://arxiv.org/abs/2603.00520",
+    "abstract": "研究多轮 Human-LLM 协作代码生成中的交互 smell，关注上下文一致性维护。",
+    "tags": ["代码生成", "大语言模型", "AI 辅助开发"],
+    "fetched_at": "2026-03-12"
+  },
+  {
+    "arxiv_id": "2603.01814",
+    "title": "AgentOS: From Application Silos to a Natural Language-Driven Data Ecosystem",
+    "authors": ["Rui Liu", "Tao Zhe", "Dongjie Wang", "Zijun Yao", "Kunpeng Liu", "Yanjie Fu", "Huan Liu", "Jian Pei"],
+    "submitted": "2026-03-09",
+    "pdf_url": "https://arxiv.org/abs/2603.01814",
+    "abstract": "提出 AgentOS 架构，将传统应用演化为 Skills-as-Modules，通过自然语言组合软件。",
+    "tags": ["Agent skills", "软件架构", "大语言模型"],
+    "fetched_at": "2026-03-12"
+  }
+]

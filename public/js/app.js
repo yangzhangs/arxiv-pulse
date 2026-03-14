@@ -17,7 +17,6 @@ function paperApp() {
       total: 0,
       totalPages: 0
     },
-    hasMoreThan10: false,
 
     async init() {
       // 从 URL 获取初始标签
@@ -54,7 +53,6 @@ function paperApp() {
         
         this.papers = data.papers || [];
         this.pagination = data.pagination || this.pagination;
-        this.hasMoreThan10 = data.pagination.total > 10;
       } catch (error) {
         console.error('Failed to load papers:', error);
       } finally {
@@ -76,7 +74,6 @@ function paperApp() {
         
         this.papers = data.papers || [];
         this.pagination = data.pagination || this.pagination;
-        this.hasMoreThan10 = data.pagination.total > 10;
       } catch (error) {
         console.error('Failed to search papers:', error);
       } finally {

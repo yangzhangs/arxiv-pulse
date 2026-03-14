@@ -117,10 +117,11 @@ class PaperDatabase {
   // 强相关关键词列表
   getStrongRelatedKeywords() {
     return [
-      'Docker', 'CI/CD', 'DevOps', '微服务', '云原生', 
+      'Docker', 'CI/CD', 'DevOps', 'Microservices', 'Cloud Native',
       'Serverless', 'Hugging Face', 'Github Actions', 
-      'Agent skills', '弃用包', 'Kubernetes', 'MLOps',
-      '容器', '自动化', '持续集成', '持续部署'
+      'Agent skills', 'Deprecated Packages', 'Kubernetes', 'MLOps',
+      'Container', 'Automation', 'CI', 'CD',
+      'LLM', 'Agent', 'Agents', 'MCP', 'Code Agents'
     ];
   }
 
@@ -129,13 +130,11 @@ class PaperDatabase {
     return `
       (
         p.title LIKE '%Docker%' OR p.title LIKE '%CI/CD%' OR p.title LIKE '%DevOps%' OR
-        p.title LIKE '%微服务%' OR p.title LIKE '%云原生%' OR p.title LIKE '%Serverless%' OR
+        p.title LIKE '%Microservices%' OR p.title LIKE '%Cloud Native%' OR p.title LIKE '%Serverless%' OR
         p.title LIKE '%Hugging Face%' OR p.title LIKE '%Github Actions%' OR p.title LIKE '%Agent%' OR
-        p.title LIKE '%弃用包%' OR p.title LIKE '%Kubernetes%' OR p.title LIKE '%MLOps%' OR
-        p.abstract LIKE '%Docker%' OR p.abstract LIKE '%CI/CD%' OR p.abstract LIKE '%DevOps%' OR
-        p.abstract LIKE '%微服务%' OR p.abstract LIKE '%云原生%' OR p.abstract LIKE '%Serverless%' OR
-        p.abstract LIKE '%Hugging Face%' OR p.abstract LIKE '%Github Actions%' OR p.abstract LIKE '%Agent%' OR
-        p.abstract LIKE '%弃用包%' OR p.abstract LIKE '%Kubernetes%' OR p.abstract LIKE '%MLOps%'
+        p.title LIKE '%Deprecated Packages%' OR p.title LIKE '%Kubernetes%' OR p.title LIKE '%MLOps%' OR
+        p.title LIKE '%Container%' OR p.title LIKE '%Automation%' OR p.title LIKE '%LLM%' OR
+        p.title LIKE '%MCP%' OR p.title LIKE '%Code Agents%'
       )
     `;
   }
@@ -342,29 +341,29 @@ class PaperDatabase {
     const searchTerm = `%${query}%`;
     const strongRelatedWhere = this.getStrongRelatedWhereClause();
     
-    // 只搜索标题和摘要，不搜索作者
+    // 严格搜索：只匹配标题，不搜索摘要和作者
     const papers = this.db.prepare(`
       SELECT p.*, GROUP_CONCAT(t.name) as tags
       FROM papers p
       LEFT JOIN paper_tags pt ON p.id = pt.paper_id
       LEFT JOIN tags t ON pt.tag_id = t.id
-      WHERE (p.title LIKE ? OR p.abstract LIKE ?)
+      WHERE p.title LIKE ?
         AND (${strongRelatedWhere})
         AND (t.is_approved = 1 OR t.is_approved IS NULL)
       GROUP BY p.id
       ORDER BY p.published_date DESC
       LIMIT ? OFFSET ?
-    `).all(searchTerm, searchTerm, limit, offset);
+    `).all(searchTerm, limit, offset);
 
     const total = this.db.prepare(`
       SELECT COUNT(DISTINCT p.id) as count
       FROM papers p
       LEFT JOIN paper_tags pt ON p.id = pt.paper_id
       LEFT JOIN tags t ON pt.tag_id = t.id
-      WHERE (p.title LIKE ? OR p.abstract LIKE ?)
+      WHERE p.title LIKE ?
         AND (${strongRelatedWhere})
         AND (t.is_approved = 1 OR t.is_approved IS NULL)
-    `).get(searchTerm, searchTerm);
+    `).get(searchTerm);
 
     return {
       papers,
