@@ -51,7 +51,12 @@ function paperApp() {
         const response = await fetch(url);
         const data = await response.json();
         
-        this.papers = data.papers || [];
+        this.papers = (data.papers || []).map(paper => {
+          // 解析 accepted_at 信息
+          paper.accepted_at = this.parseAcceptedAt(paper.comments);
+          return paper;
+        });
+        
         this.pagination = data.pagination || this.pagination;
       } catch (error) {
         console.error('Failed to load papers:', error);
@@ -120,6 +125,23 @@ function paperApp() {
       }
       
       return abstract;
+    },
+
+    parseAcceptedAt(comments) {
+      if (!comments) return null;
+      
+      // 匹配 "accepted at" 模式
+      const acceptedMatch = comments.match(/accepted at (.+?)(?:\.|$)/i);
+      
+      if (acceptedMatch) {
+        const fullName = acceptedMatch[1].trim();
+        
+        // 提取会议/期刊缩写（括号中的内容）
+        const abbrMatch = fullName.match(/\(([^)]+)\)/);
+        return abbrMatch ? abbrMatch[1] : fullName;
+      }
+      
+      return null;
     },
 
     get totalPagesArray() {

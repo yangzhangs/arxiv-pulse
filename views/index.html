@@ -134,6 +134,19 @@
                 <a :href="paper.arxiv_url" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600" x-text="paper.title"></a>
               </h3>
               <p class="text-sm text-gray-600 mb-3" x-text="paper.authors"></p>
+              
+              <!-- 会议/期刊标记 -->
+              <div class="mb-3">
+                <template x-if="paper.accepted_at">
+                  <span 
+                    class="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium"
+                    :title="paper.accepted_at"
+                  >
+                    🎉 <span x-text="paper.accepted_at" class="ml-1"></span>
+                  </span>
+                </template>
+              </div>
+              
               <div class="text-gray-700 text-sm mb-4" x-html="formatAbstract(paper.abstract)"></div>
               
               <!-- 标签 -->
