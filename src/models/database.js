@@ -125,13 +125,14 @@ class PaperDatabase {
     ];
   }
 
-  // 构建 SQL WHERE 条件用于强相关过滤
+  // 构建 SQL WHERE 条件用于强相关过滤（严格单词匹配）
   getStrongRelatedWhereClause() {
     return `
       (
         p.title LIKE '%Docker%' OR p.title LIKE '%CI/CD%' OR p.title LIKE '%DevOps%' OR
         p.title LIKE '%Microservices%' OR p.title LIKE '%Cloud Native%' OR p.title LIKE '%Serverless%' OR
-        p.title LIKE '%Hugging Face%' OR p.title LIKE '%Github Actions%' OR p.title LIKE '%Agent%' OR
+        p.title LIKE '%Hugging Face%' OR p.title LIKE '%Github Actions%' OR 
+        (p.title LIKE '% Agent %' OR p.title LIKE '% Agent''s' OR p.title LIKE 'Agent %' OR p.title LIKE '% Agents' OR p.title LIKE '% Agents%' OR p.title LIKE '%, Agent%' OR p.title LIKE '%-Agent%' OR p.title LIKE '%_Agent%') OR
         p.title LIKE '%Deprecated Packages%' OR p.title LIKE '%Kubernetes%' OR p.title LIKE '%MLOps%' OR
         p.title LIKE '%Container%' OR p.title LIKE '%Automation%' OR p.title LIKE '%LLM%' OR
         p.title LIKE '%MCP%' OR p.title LIKE '%Code Agents%'
