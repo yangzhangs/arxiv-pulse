@@ -11,7 +11,7 @@
 </head>
 <body class="bg-gray-50 min-h-screen">
   <!-- 导航栏 -->
-  <nav class="bg-white shadow-sm border-b" x-data="{ mobileMenuOpen: false }">
+  <nav class="bg-white shadow-sm border-b" x-data="{ mobileMenuOpen: false, currentLang: getCurrentLang(), t: {} }" x-init="loadTranslations(currentLang).then(translations => t = translations)">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16">
         <div class="flex items-center">
@@ -31,14 +31,24 @@
           <a href="about" class="text-gray-600 hover:text-gray-900" x-text="t.navAbout || '关于'">关于</a>
           
           <!-- 语言切换 -->
-          <div class="flex items-center space-x-2 border-l pl-4">
-            <button onclick="switchLang('zh')" class="px-2 py-1 text-sm rounded hover:bg-gray-100" :class="currentLang === 'zh' ? 'bg-blue-100 text-blue-700' : 'text-gray-600'">中文</button>
-            <button onclick="switchLang('en')" class="px-2 py-1 text-sm rounded hover:bg-gray-100" :class="currentLang === 'en' ? 'bg-blue-100 text-blue-700' : 'text-gray-600'">EN</button>
+          <div class="flex items-center border-l pl-4" x-data="{ lang: getCurrentLang() }">
+            <button @click="switchLang(lang === 'zh' ? 'en' : 'zh')" 
+              class="flex items-center space-x-2 px-3 py-1.5 rounded-lg border hover:border-blue-300 hover:bg-blue-50 transition-all"
+              :class="lang === 'zh' ? 'bg-blue-100 border-blue-200' : 'bg-gray-50 border-gray-200'"
+              :title="lang === 'zh' ? 'Switch to English' : '切换到中文'">
+              <span x-show="lang === 'zh'" class="text-sm">🌏 EN</span>
+              <span x-show="lang === 'en'" class="text-sm">🌐 中文</span>
+            </button>
           </div>
         </div>
 
         <!-- 移动端菜单按钮 -->
-        <div class="md:hidden flex items-center">
+        <div class="md:hidden flex items-center space-x-4">
+          <!-- 移动端语言切换 -->
+          <div class="flex items-center space-x-1" x-data="{ lang: getCurrentLang() }">
+            <button @click="switchLang('zh')" class="px-2 py-1 text-xs rounded" :class="lang === 'zh' ? 'bg-blue-100 text-blue-700' : 'text-gray-600'">中文</button>
+            <button @click="switchLang('en')" class="px-2 py-1 text-xs rounded" :class="lang === 'en' ? 'bg-blue-100 text-blue-700' : 'text-gray-600'">EN</button>
+          </div>
           <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-gray-600 hover:text-gray-900">
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -51,9 +61,16 @@
     <!-- 移动端菜单 -->
     <div x-show="mobileMenuOpen" class="md:hidden bg-white border-t">
       <div class="px-4 py-2 space-y-2">
-        <a href="." class="block py-2 text-blue-600 font-medium">首页</a>
-        <a href="tags" class="block py-2 text-gray-600">标签</a>
-        <a href="about" class="block py-2 text-gray-600">关于</a>
+        <a href="." class="block py-2 text-blue-600 font-medium" x-text="t.navHome || '首页'">首页</a>
+        <a href="tags" class="block py-2 text-gray-600" x-text="t.navTags || '标签'">标签</a>
+        <a href="about" class="block py-2 text-gray-600" x-text="t.navAbout || '关于'">关于</a>
+        <div class="pt-2 border-t mt-2">
+          <p class="text-xs text-gray-500 py-1">Language / 语言</p>
+          <div class="flex space-x-2">
+            <button onclick="switchLang('zh')" class="px-3 py-1 text-sm rounded" :class="currentLang === 'zh' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'">中文</button>
+            <button onclick="switchLang('en')" class="px-3 py-1 text-sm rounded" :class="currentLang === 'en' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'">EN</button>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
@@ -98,30 +115,34 @@
     <!-- 统计信息 -->
     <div class="mb-6 flex items-center justify-between">
       <p class="text-gray-600">
-        <span x-text="t.noPapers ? '共 ' + pagination.total + ' 篇' : '共 ' + pagination.total + ' 篇'">共</span>
+        <span x-show="currentLang === 'zh'">共</span>
         <span class="font-semibold text-gray-900" x-text="pagination.total"></span>
-        <span x-text="t.noPapers ? '' : '篇'">篇</span>
-        <span x-show="selectedTag" class="ml-2 text-blue-600">
-          · <span x-text="t.navTags || '标签'">标签</span>：<span x-text="selectedTag"></span>
+        <span x-show="currentLang === 'zh'">篇</span>
+        <span x-show="selectedTag && currentLang === 'zh'"> · </span>
+        <span x-show="selectedTag && currentLang === 'en'"> | </span>
+        <span x-show="selectedTag">
+          <span x-text="currentLang === 'zh' ? '标签' : 'Tag'"></span>: <span x-text="selectedTag"></span>
         </span>
+        <span x-show="currentLang === 'en'"> papers</span>
       </p>
       <div class="flex items-center space-x-2">
         <button 
           @click="currentPage--" 
           :disabled="currentPage <= 1"
           class="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+          x-text="currentLang === 'zh' ? '上一页' : 'Previous'"
         >
-          <span x-text="t.navHome === '首页' ? '上一页' : 'Previous'">上一页</span>
         </button>
         <span class="text-gray-600">
-          <span x-text="t.currentLang === 'zh' ? '第 ' + currentPage + ' / ' + (pagination.totalPages || 1) + ' 页' : 'Page ' + currentPage + ' / ' + (pagination.totalPages || 1)">第</span>
+          <span x-show="currentLang === 'zh'" x-text="'第 ' + currentPage + ' / ' + (pagination.totalPages || 1) + ' 页'"></span>
+          <span x-show="currentLang === 'en'" x-text="'Page ' + currentPage + ' / ' + (pagination.totalPages || 1)"></span>
         </span>
         <button 
           @click="currentPage++" 
           :disabled="currentPage >= pagination.totalPages"
           class="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+          x-text="currentLang === 'zh' ? '下一页' : 'Next'"
         >
-          <span x-text="t.navHome === '首页' ? '下一页' : 'Next'">下一页</span>
         </button>
       </div>
     </div>
@@ -141,7 +162,11 @@
               <h3 class="text-lg font-semibold text-gray-900 mb-2">
                 <a :href="paper.arxiv_url" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600" x-text="paper.title"></a>
               </h3>
-              <p class="text-sm text-gray-600 mb-3" x-text="paper.authors"></p>
+              <!-- 作者 -->
+              <div class="text-sm text-gray-600 mb-2">
+                <span class="font-medium mr-1" x-text="currentLang === 'zh' ? '作者：' : 'Authors: '"></span>
+                <span x-text="paper.authors"></span>
+              </div>
               
               <!-- 会议/期刊标记 -->
               <div class="mb-3">
@@ -150,21 +175,32 @@
                     class="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium"
                     :title="paper.accepted_at"
                   >
-                    🎉 <span x-text="paper.accepted_at" class="ml-1"></span>
+                    🎉 
+                    <span x-show="currentLang === 'zh'" class="ml-1">录用于：</span>
+                    <span x-show="currentLang === 'en'" class="ml-1">Accepted at:</span>
+                    <span x-text="paper.accepted_at"></span>
                   </span>
                 </template>
               </div>
               
+              <!-- 摘要标签 -->
+              <div class="text-xs font-medium text-gray-500 mb-1" x-show="currentLang === 'en'">
+                Abstract
+              </div>
               <div class="text-gray-700 text-sm mb-4" x-html="formatAbstract(paper.abstract)"></div>
               
               <!-- 标签 -->
               <div class="flex flex-wrap gap-2 mb-3">
-                <template x-if="paper.tags">
-                  <template x-for="tag in paper.tags.split(',')" :key="tag">
+                <template x-if="paper.tags && paper.tags.trim()">
+                  <div class="w-full text-xs font-medium text-gray-500 mb-1">
+                    <span x-show="currentLang === 'zh'">标签</span>
+                    <span x-show="currentLang === 'en'">Tags</span>
+                  </div>
+                  <template x-for="tag in paper.tags.split(',').filter(t => t.trim())" :key="tag">
                     <span 
                       class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full cursor-pointer hover:bg-blue-200"
-                      @click="selectedTag = tag; filterByTag()"
-                      x-text="tag"
+                      @click="selectedTag = tag.trim(); filterByTag()"
+                      x-text="tag.trim()"
                     ></span>
                   </template>
                 </template>
@@ -189,7 +225,10 @@
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
         </svg>
-        <p class="mt-4 text-gray-600">暂无文章</p>
+        <p class="mt-4 text-gray-600">
+          <span x-show="currentLang === 'zh'">暂无文章</span>
+          <span x-show="currentLang === 'en'">No papers available</span>
+        </p>
       </div>
     </div>
 
@@ -201,7 +240,8 @@
           :disabled="currentPage <= 1"
           class="px-4 py-2 border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
         >
-          ← 上一页
+          <span x-show="currentLang === 'zh'">← 上一页</span>
+          <span x-show="currentLang === 'en'">← Previous</span>
         </button>
         <template x-for="page in totalPagesArray" :key="page">
           <button 
@@ -216,7 +256,8 @@
           :disabled="currentPage >= pagination.totalPages"
           class="px-4 py-2 border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
         >
-          下一页 →
+          <span x-show="currentLang === 'zh'">下一页 →</span>
+          <span x-show="currentLang === 'en'">Next →</span>
         </button>
       </div>
     </div>

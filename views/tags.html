@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title x-text="t.tagsTitle || '标签管理'">标签管理 - ArxivPulse</title>
+  <title x-text="t.tagsTitle || 'Tags'">标签管理 - ArxivPulse</title>
   <base href=".">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="js/app.js"></script>
 </head>
 <body class="bg-gray-50 min-h-screen">
   <!-- 导航栏 -->
@@ -24,9 +25,20 @@
         </div>
         
         <div class="hidden md:flex items-center space-x-8">
-          <a href="." class="text-gray-600 hover:text-gray-900">首页</a>
-          <a href="tags" class="text-blue-600 font-medium">标签</a>
-          <a href="about" class="text-gray-600 hover:text-gray-900">关于</a>
+          <a href="." class="text-gray-600 hover:text-gray-900" x-text="t.navHome || 'Home'">首页</a>
+          <a href="tags" class="text-blue-600 font-medium" x-text="t.navTags || 'Tags'">标签</a>
+          <a href="about" class="text-gray-600 hover:text-gray-900" x-text="t.navAbout || 'About'">关于</a>
+          
+          <!-- 语言切换 -->
+          <div class="flex items-center border-l pl-4" x-data="{ lang: getCurrentLang() }">
+            <button @click="switchLang(lang === 'zh' ? 'en' : 'zh')" 
+              class="flex items-center space-x-2 px-3 py-1.5 rounded-lg border hover:border-blue-300 hover:bg-blue-50 transition-all"
+              :class="lang === 'zh' ? 'bg-blue-100 border-blue-200' : 'bg-gray-50 border-gray-200'"
+              :title="lang === 'zh' ? 'Switch to English' : '切换到中文'">
+              <span x-show="lang === 'zh'" class="text-sm">🌏 EN</span>
+              <span x-show="lang === 'en'" class="text-sm">🌐 中文</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -38,15 +50,15 @@
         x-init="init()">
     
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2" x-text="t.tagsTitle || '标签管理'">标签管理</h1>
-      <p class="text-gray-600" x-text="t.tagsSubtitle || '管理和筛选学术文章标签'">管理和筛选学术文章标签</p>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2" x-text="t.tagsTitle || 'Tags'">标签管理</h1>
+      <p class="text-gray-600" x-text="t.tagsSubtitle || 'Manage and filter paper tags'">管理和筛选学术文章标签</p>
     </div>
 
     <!-- 申请新标签 -->
     <div class="bg-white rounded-lg shadow-sm border p-6 mb-8">
-      <h2 class="text-lg font-semibold mb-4" x-text="t.applyTagTitle || '申请添加你感兴趣的标签'">申请添加你感兴趣的标签</h2>
+      <h2 class="text-lg font-semibold mb-4" x-text="t.applyTagTitle || 'Request a New Tag'">申请添加你感兴趣的标签</h2>
       <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-        <p class="text-sm text-blue-700" x-text="t.applyTagTip || '💡 提交标签申请后，需要管理员审核通过才能添加到标签列表。请确保标签与 Software Engineering 领域相关。'">
+        <p class="text-sm text-blue-700" x-text="t.applyTagTip || '💡 After submitting a tag request, it needs admin approval before being added. Please ensure the tag is related to Software Engineering.'">
           💡 提交标签申请后，需要管理员审核通过才能添加到标签列表。请确保标签与 Software Engineering 领域相关。
         </p>
       </div>
@@ -54,7 +66,7 @@
         <input 
           type="text" 
           x-model="newTagName"
-          :placeholder="t.applyTagPlaceholder || '标签名称（如：Machine Learning）'"
+          :placeholder="t.applyTagPlaceholder || 'Tag name (e.g., Machine Learning)'"
           class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           @keyup.enter="applyTag()"
         >
@@ -63,8 +75,8 @@
           :disabled="submitting"
           class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <span x-show="!submitting" x-text="t.applyTagSubmit || '提交申请'">提交申请</span>
-          <span x-show="submitting" x-text="t.applying || '提交中...'">提交中...</span>
+          <span x-show="!submitting" x-text="t.applyTagSubmit || 'Submit'">提交申请</span>
+          <span x-show="submitting" x-text="t.applying || 'Submitting...'">提交中...</span>
         </button>
       </div>
     </div>
@@ -101,7 +113,8 @@
         </div>
 
         <div x-show="!loading && tags.length === 0" class="text-center py-8 text-gray-600">
-          <span x-text="t.noTags || '暂无标签'">暂无标签</span>
+          <span x-show="currentLang === 'zh'" x-text="t.noTags || '暂无标签'">暂无标签</span>
+          <span x-show="currentLang === 'en'" x-text="t.noTags || 'No tags'">No tags</span>
         </div>
       </div>
     </div>
@@ -118,7 +131,12 @@
         t: {},
 
         async init() {
-          this.t = await loadTranslations(this.currentLang);
+          try {
+            this.t = await loadTranslations(this.currentLang);
+          } catch (e) {
+            console.error('Failed to load translations:', e);
+            this.t = {};
+          }
           await this.loadTags();
         },
 
@@ -137,7 +155,8 @@
 
         async applyTag() {
           if (!this.newTagName.trim()) {
-            alert('请输入标签名称');
+            const msg = this.currentLang === 'en' ? 'Please enter a tag name' : '请输入标签名称';
+            alert(msg);
             return;
           }
 
@@ -155,13 +174,22 @@
 
             if (response.ok) {
               this.newTagName = '';
-              alert('标签申请已提交，等待管理员审核！');
+              const successMsg = this.currentLang === 'en' 
+                ? 'Tag request submitted, waiting for admin review!' 
+                : '标签申请已提交，等待管理员审核！';
+              alert(successMsg);
             } else {
-              alert('申请失败：' + (data.error || '未知错误'));
+              const errorMsg = this.currentLang === 'en'
+                ? 'Application failed: ' + (data.error || 'Unknown error')
+                : '申请失败：' + (data.error || '未知错误');
+              alert(errorMsg);
             }
           } catch (error) {
             console.error('Failed to apply tag:', error);
-            alert('申请失败：' + error.message);
+            const errorMsg = this.currentLang === 'en'
+              ? 'Application failed: ' + error.message
+              : '申请失败：' + error.message;
+            alert(errorMsg);
           } finally {
             this.submitting = false;
           }

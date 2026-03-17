@@ -137,11 +137,21 @@ function paperApp() {
 
     formatDate(dateString) {
       const date = new Date(dateString);
-      return date.toLocaleDateString('zh-CN', {
+      // 根据当前语言选择日期格式
+      const locale = this.currentLang === 'en' ? 'en-US' : 'zh-CN';
+      const options = {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
-      });
+      };
+      
+      if (this.currentLang === 'en') {
+        // 英文格式：March 9, 2026
+        return date.toLocaleDateString('en-US', options);
+      } else {
+        // 中文格式：2026 年 3 月 9 日
+        return date.toLocaleDateString('zh-CN', options);
+      }
     },
 
     formatAbstract(abstract) {

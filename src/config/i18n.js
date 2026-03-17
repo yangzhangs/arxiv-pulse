@@ -26,6 +26,10 @@ const i18n = {
     pdf: 'PDF',
     arxiv: 'Arxiv',
     acceptedAt: '录用于',
+    authorsLabel: '作者',
+    acceptedAtLabel: '录用',
+    abstractLabel: '摘要',
+    tagsLabel: '标签',
     
     // 标签页面
     tagsTitle: '标签管理',
@@ -90,7 +94,15 @@ const i18n = {
     confirm: '确认',
     deleteConfirm: '确定要删除吗？',
     backToHome: '返回首页',
-    adminLogout: '登出'
+    adminLogout: '登出',
+    
+    // 分页
+    papersCount: '篇',
+    tagLabel: '标签',
+    previousPage: '上一页',
+    nextPage: '下一页',
+    pageIndicator: '第 {current} / {total} 页',
+    noPapers: '暂无文章'
   },
   
   en: {
@@ -116,6 +128,10 @@ const i18n = {
     pdf: 'PDF',
     arxiv: 'Arxiv',
     acceptedAt: 'Accepted at',
+    authorsLabel: 'Authors',
+    acceptedAtLabel: 'Accepted',
+    abstractLabel: 'Abstract',
+    tagsLabel: 'Tags',
     
     // Tags
     tagsTitle: 'Tags',
@@ -180,7 +196,15 @@ const i18n = {
     confirm: 'Confirm',
     deleteConfirm: 'Are you sure you want to delete?',
     backToHome: 'Back to Home',
-    adminLogout: 'Logout'
+    adminLogout: 'Logout',
+    
+    // Pagination
+    papersCount: 'papers',
+    tagLabel: 'Tag',
+    previousPage: 'Previous',
+    nextPage: 'Next',
+    pageIndicator: 'Page {current} / {total}',
+    noPapers: 'No papers available'
   }
 };
 
