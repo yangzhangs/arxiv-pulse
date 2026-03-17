@@ -165,7 +165,7 @@ class PaperDatabase {
       WHERE (${strongRelatedWhere})
         AND (t.is_approved = 1 OR t.is_approved IS NULL)
       GROUP BY p.id
-      ORDER BY p.submitted_date DESC
+      ORDER BY p.published_date DESC
       LIMIT ? OFFSET ?
     `).all(limit, offset);
 

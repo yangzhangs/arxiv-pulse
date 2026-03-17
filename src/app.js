@@ -13,6 +13,9 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
+// 国际化配置
+const i18n = require('./config/i18n');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -81,17 +84,6 @@ app.get('/arxiv-pulse/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../views/admin.html'));
 });
 
-// 404
-app.use((req, res) => {
-  res.status(404).sendFile(path.join(__dirname, '../views/404.html'));
-});
-
-// 错误处理
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
-});
-
 // 语言切换 API
 app.get('/api/set-lang', (req, res) => {
   const lang = req.query.lang;
@@ -111,6 +103,17 @@ app.get('/api/i18n', (req, res) => {
   } else {
     res.status(400).json({ error: 'Invalid language' });
   }
+});
+
+// 404
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, '../views/404.html'));
+});
+
+// 错误处理
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
 });
 
 // 启动服务器
