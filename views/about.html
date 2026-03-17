@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title x-text="t.aboutTitle || '关于'">关于 - ArxivPulse</title>
+  <title x-text="t.aboutTitle || 'About'">关于 - ArxivPulse</title>
   <base href=".">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="js/app.js"></script>
 </head>
 <body class="bg-gray-50 min-h-screen">
   <!-- 导航栏 -->
-  <nav class="bg-white shadow-sm border-b">
+  <nav class="bg-white shadow-sm border-b" x-data="{ currentLang: getCurrentLang(), t: {} }" x-init="loadTranslations(currentLang).then(translations => t = translations)">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16">
         <div class="flex items-center">
@@ -24,14 +25,19 @@
         </div>
         
         <div class="hidden md:flex items-center space-x-8">
-          <a href="." class="text-gray-600 hover:text-gray-900" x-text="t.navHome || '首页'">首页</a>
-          <a href="tags" class="text-gray-600 hover:text-gray-900" x-text="t.navTags || '标签'">标签</a>
-          <a href="about" class="text-blue-600 font-medium" x-text="t.navAbout || '关于'">关于</a>
+          <a href="." class="text-gray-600 hover:text-gray-900" x-text="t.navHome || 'Home'">首页</a>
+          <a href="tags" class="text-gray-600 hover:text-gray-900" x-text="t.navTags || 'Tags'">标签</a>
+          <a href="about" class="text-blue-600 font-medium" x-text="t.navAbout || 'About'">关于</a>
           
           <!-- 语言切换 -->
-          <div class="flex items-center space-x-2 border-l pl-4">
-            <button onclick="switchLang('zh')" class="px-2 py-1 text-sm rounded hover:bg-gray-100" :class="currentLang === 'zh' ? 'bg-blue-100 text-blue-700' : 'text-gray-600'">中文</button>
-            <button onclick="switchLang('en')" class="px-2 py-1 text-sm rounded hover:bg-gray-100" :class="currentLang === 'en' ? 'bg-blue-100 text-blue-700' : 'text-gray-600'">EN</button>
+          <div class="flex items-center border-l pl-4" x-data="{ lang: currentLang }">
+            <button @click="switchLang(lang === 'zh' ? 'en' : 'zh')" 
+              class="flex items-center space-x-2 px-3 py-1.5 rounded-lg border hover:border-blue-300 hover:bg-blue-50 transition-all"
+              :class="lang === 'zh' ? 'bg-blue-100 border-blue-200' : 'bg-gray-50 border-gray-200'"
+              :title="lang === 'zh' ? 'Switch to English' : '切换到中文'">
+              <span x-show="lang === 'zh'" class="text-sm">🌏 EN</span>
+              <span x-show="lang === 'en'" class="text-sm">🌐 中文</span>
+            </button>
           </div>
         </div>
       </div>
@@ -48,15 +54,17 @@
       <div class="prose prose-blue max-w-none">
         <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
           <p class="text-blue-700 font-medium">
-            🎯 <span x-text="t.currentLang === 'zh' ? '本网站专为 RESET 小组打造，用于组内学术交流与知识分享' : 'This website is designed for RESET group for academic exchange and knowledge sharing'">本网站专为 RESET 小组打造，用于组内学术交流与知识分享</span>
+            🎯 
+            <span x-show="currentLang === 'zh'">本网站专为 RESET 小组打造，用于组内学术交流与知识分享</span>
+            <span x-show="currentLang === 'en'">This website is designed for RESET group for academic exchange and knowledge sharing</span>
           </p>
         </div>
         
-        <p class="text-lg text-gray-700 mb-6" x-show="t.currentLang === 'zh'">
+        <p class="text-lg text-gray-700 mb-6" x-show="currentLang === 'zh'">
           ArxivPulse 是一个面向 RESET 小组的学术文章检索与展示平台，致力于帮助团队成员高效追踪 Software Engineering 领域的最新研究进展。平台每日自动从 arXiv 获取最新论文，通过智能关键词匹配和标签系统，将高质量的研究成果精准推送给需要的同学。我们相信，及时的学术资讯能够激发创新灵感，促进团队内部的知识交流与协作。
         </p>
         
-        <p class="text-lg text-gray-700 mb-6" x-show="t.currentLang === 'en'">
+        <p class="text-lg text-gray-700 mb-6" x-show="currentLang === 'en'">
           ArxivPulse is an academic paper search and display platform for the RESET group, dedicated to helping team members efficiently track the latest research progress in Software Engineering. The platform automatically fetches the latest papers from arXiv daily and uses intelligent keyword matching and tag systems to deliver high-quality research to team members. We believe that timely academic information can inspire innovation and promote knowledge exchange and collaboration within the team.
         </p>
 

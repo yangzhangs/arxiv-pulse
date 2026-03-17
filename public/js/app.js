@@ -155,12 +155,26 @@ function paperApp() {
     },
 
     formatAbstract(abstract) {
-      if (!abstract) return '暂无简介';
+      if (!abstract) {
+        return this.currentLang === 'zh' ? '暂无简介' : 'No abstract available';
+      }
       
-      // 只显示中文摘要
+      // 如果包含 [EN] 和 [CN] 标记，根据当前语言返回对应摘要
       if (abstract.includes('[EN]') && abstract.includes('[CN]')) {
-        const cnPart = abstract.split('[CN]')[1].trim();
-        return `<div class="text-gray-700">${cnPart}</div>`;
+        if (this.currentLang === 'en') {
+          // 英文模式：返回 [EN] 和 [CN] 之间的内容
+          const enMatch = abstract.match(/\[EN\]([\s\S]*?)\[CN\]/);
+          if (enMatch && enMatch[1]) {
+            return `<div class="text-gray-700">${enMatch[1].trim()}</div>`;
+          }
+          // 如果没有找到英文部分，返回中文部分
+          const cnPart = abstract.split('[CN]')[1].trim();
+          return `<div class="text-gray-700">${cnPart}</div>`;
+        } else {
+          // 中文模式：返回 [CN] 之后的内容
+          const cnPart = abstract.split('[CN]')[1].trim();
+          return `<div class="text-gray-700">${cnPart}</div>`;
+        }
       }
       
       // 旧格式兼容
@@ -168,6 +182,7 @@ function paperApp() {
         return abstract.replace('[中文摘要]', '');
       }
       
+      // 如果没有标记，直接返回原文
       return abstract;
     },
 

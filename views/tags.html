@@ -11,15 +11,15 @@
 </head>
 <body class="bg-gray-50 min-h-screen">
   <!-- 导航栏 -->
-  <nav class="bg-white shadow-sm border-b">
+  <nav class="bg-white shadow-sm border-b" x-data="{ currentLang: getCurrentLang(), t: {} }" x-init="loadTranslations(currentLang).then(translations => t = translations)">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16">
         <div class="flex items-center">
           <a href="." class="flex items-center space-x-2">
             <span class="text-2xl">📚</span>
             <div class="flex flex-col">
-              <span class="font-bold text-xl text-gray-900">ArxivPulse</span>
-              <span class="text-xs text-gray-500">(only for RESET group)</span>
+              <span class="font-bold text-xl text-gray-900" x-text="t.siteName || 'ArxivPulse'">ArxivPulse</span>
+              <span class="text-xs text-gray-500" x-text="t.siteTagline || '(only for RESET group)'">(only for RESET group)</span>
             </div>
           </a>
         </div>
@@ -30,7 +30,7 @@
           <a href="about" class="text-gray-600 hover:text-gray-900" x-text="t.navAbout || 'About'">关于</a>
           
           <!-- 语言切换 -->
-          <div class="flex items-center border-l pl-4" x-data="{ lang: getCurrentLang() }">
+          <div class="flex items-center border-l pl-4" x-data="{ lang: currentLang }">
             <button @click="switchLang(lang === 'zh' ? 'en' : 'zh')" 
               class="flex items-center space-x-2 px-3 py-1.5 rounded-lg border hover:border-blue-300 hover:bg-blue-50 transition-all"
               :class="lang === 'zh' ? 'bg-blue-100 border-blue-200' : 'bg-gray-50 border-gray-200'"
@@ -84,7 +84,10 @@
     <!-- 已通过的标签列表 -->
     <div class="bg-white rounded-lg shadow-sm border mb-8">
       <div class="p-6 border-b">
-        <h2 class="text-lg font-semibold" x-text="(t.allTagsList || '所有标签') + ' (' + tags.length + ')'">所有标签</h2>
+        <h2 class="text-lg font-semibold">
+          <span x-show="currentLang === 'zh'" x-text="(t.allTagsList || '所有标签') + ' (' + tags.length + ')'">所有标签</span>
+          <span x-show="currentLang === 'en'">All Tags (<span x-text="tags.length"></span>)</span>
+        </h2>
       </div>
       
       <div class="p-6">
@@ -97,13 +100,13 @@
             <div class="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
               <div class="flex items-center space-x-2">
                 <span class="font-medium px-3 py-1 bg-blue-100 text-blue-700 rounded-full" x-text="tag.name"></span>
-                <span class="text-xs text-gray-500" x-text="'(' + (tag.paper_count || 0) + ')'"></span>
+                <span class="text-xs text-gray-500">(<span x-text="tag.paper_count || 0"></span>)</span>
               </div>
               <div class="flex items-center space-x-2">
                 <a 
                   :href="'./?tag=' + tag.name"
                   class="text-sm text-blue-600 hover:underline"
-                  x-text="t.view || '查看'"
+                  x-text="currentLang === 'zh' ? (t.view || '查看') : (t.view || 'View')"
                 >
                   查看
                 </a>
