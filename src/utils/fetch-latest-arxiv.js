@@ -50,8 +50,8 @@ function parseArxivResponse(xml) {
       const summary = entry.match(/<summary>(.*?)<\/summary>/s)?.[1]?.replace(/\n/g, ' ').trim() || '';
       const published = entry.match(/<published>(.*?)<\/published>/)?.[1] || '';
       
-      // 修复作者信息解析（支持多行 XML）
-      const authorMatches = entry.matchAll(/<author>\s*<name>(.*?)<\/name>\s*<\/author>/gs);
+      // 修复作者信息解析（支持多行 XML + 命名空间）
+      const authorMatches = entry.matchAll(/<author>[\s\S]*?<name>(.*?)<\/name>[\s\S]*?<\/author>/g);
       const authors = Array.from(authorMatches).map(m => m[1]).join(', ');
       
       const arxivId = id.split('/abs/').pop() || id.split('/').pop();
