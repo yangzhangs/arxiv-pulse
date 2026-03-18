@@ -9,7 +9,7 @@ const path = require('path');
 
 // 加载集中配置的关键词
 const keywords = require('../config/keywords');
-const KEYWORDS = [...keywords.en, ...keywords.zh];
+const KEYWORDS = keywords.en;
 const TAG_MAP = keywords.tagMap;
 
 console.log('📡 正在从 Arxiv API 获取最新 cs.SE 论文...\n');
@@ -50,7 +50,8 @@ function parseArxivResponse(xml) {
       const summary = entry.match(/<summary>(.*?)<\/summary>/s)?.[1]?.replace(/\n/g, ' ').trim() || '';
       const published = entry.match(/<published>(.*?)<\/published>/)?.[1] || '';
       
-      const authorMatches = entry.matchAll(/<author><name>(.*?)<\/name><\/author>/g);
+      // 修复作者信息解析（支持多行 XML）
+      const authorMatches = entry.matchAll(/<author>\s*<name>(.*?)<\/name>\s*<\/author>/gs);
       const authors = Array.from(authorMatches).map(m => m[1]).join(', ');
       
       const arxivId = id.split('/abs/').pop() || id.split('/').pop();
