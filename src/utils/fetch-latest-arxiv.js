@@ -3,7 +3,7 @@
  * 用法：node src/utils/fetch-latest-arxiv.js
  */
 
-const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
@@ -14,9 +14,9 @@ const TAG_MAP = keywords.tagMap;
 
 console.log('📡 正在从 Arxiv API 获取最新 cs.SE 论文...\n');
 
-const url = 'http://export.arxiv.org/api/query?search_query=cat:cs.SE&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending';
+const url = 'https://export.arxiv.org/api/query?search_query=cat:cs.SE&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending';
 
-http.get(url, (res) => {
+https.get(url, (res) => {
   let data = '';
   
   res.on('data', (chunk) => {
