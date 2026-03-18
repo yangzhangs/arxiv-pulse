@@ -244,6 +244,28 @@ function paperApp() {
       }
     },
 
+    async translateAbstractOnPage() {
+      // 页面加载后翻译所有待翻译摘要
+      if (this.currentLang !== 'zh') return;
+      
+      const pendingElements = document.querySelectorAll('[data-translate-pending="true"]');
+      for (const el of pendingElements) {
+        const enText = el.getAttribute('data-en');
+        if (!enText) continue;
+        
+        try {
+          const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(enText)}&langpair=en|zh`);
+          const data = await response.json();
+          if (data && data.responseData && data.responseData.translatedText) {
+            el.textContent = data.responseData.translatedText;
+            el.removeAttribute('data-translate-pending');
+          }
+        } catch (error) {
+          console.error('Translation failed:', error);
+        }
+      }
+    },
+
     parseAcceptedAt(paper) {
       // 优先使用 accepted_venue 字段
       if (paper.accepted_venue) {
