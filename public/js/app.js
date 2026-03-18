@@ -186,21 +186,17 @@ function paperApp() {
         return this.currentLang === 'zh' ? '暂无简介' : 'No abstract available';
       }
       
-      // 中文界面：优先使用 abstract_cn 字段
+      // 中文界面：优先使用 chinese_abstract 字段
       if (this.currentLang === 'zh') {
-        if (paper.abstract_cn) {
-          return `<div class="text-gray-700">${paper.abstract_cn}</div>`;
+        if (paper.chinese_abstract && paper.chinese_abstract.length > 10) {
+          return `<div class="text-gray-700">${paper.chinese_abstract}</div>`;
         }
         // 降级：使用 abstract 字段（移除前缀）
         const cleanAbstract = (paper.abstract || '').replace(/^\[中文摘要\]\s*/, '').trim();
         return `<div class="text-gray-700">${cleanAbstract || '暂无简介'}</div>`;
       }
       
-      // 英文界面：优先使用 abstract_en 字段
-      if (paper.abstract_en) {
-        return `<div class="text-gray-700">${paper.abstract_en}</div>`;
-      }
-      // 降级：使用 abstract 字段（移除前缀）
+      // 英文界面：使用 abstract 字段（移除前缀）
       const cleanAbstract = (paper.abstract || '').replace(/^\[中文摘要\]\s*/, '').trim();
       return `<div class="text-gray-700">${cleanAbstract || 'No abstract available'}</div>`;
     },
