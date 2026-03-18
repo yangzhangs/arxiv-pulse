@@ -86,6 +86,10 @@ function paperApp() {
         const data = await response.json();
         
         this.papers = (data.papers || []).map(paper => {
+          // 确保 submitted_date 有值
+          if (!paper.submitted_date && paper.published_date) {
+            paper.submitted_date = paper.published_date;
+          }
           // 解析 accepted_venue 信息（优先使用数据库字段，否则从 comment 解析）
           if (!paper.accepted_venue && paper.comment) {
             paper.accepted_venue = this.parseAcceptedAt(paper);
@@ -137,10 +141,26 @@ function paperApp() {
       window.history.pushState({}, '', url);
     },
 
+    formatTags(tags) {
+      // 标签可能是逗号分隔的字符串或数组
+      if (!tags) return [];
+      if (Array.isArray(tags)) return tags;
+      return tags.split(',').filter(t => t.trim());
+    },
+
     formatDate(dateString) {
+      if (!dateString) {
+        return this.currentLang === 'zh' ? '日期未知' : 'Date unknown';
+      }
+      
       const date = new Date(dateString);
+      
+      // 检查日期是否有效
+      if (isNaN(date.getTime())) {
+        return this.currentLang === 'zh' ? '日期无效' : 'Invalid date';
+      }
+      
       // 根据当前语言选择日期格式
-      const locale = this.currentLang === 'en' ? 'en-US' : 'zh-CN';
       const options = {
         year: 'numeric',
         month: 'long',
