@@ -284,21 +284,23 @@ function importFromJson(jsonFile, strictMode = true) {
         // 修复作者信息
         const authors = fixAuthors(paper.authors || paper.author);
         
+        // 获取完整英文摘要
+        const englishAbstract = paper.abstract || paper.summary || '';
+        
         // 生成中文摘要
-        const chineseAbstract = generateChineseAbstract(
-          paper.abstract || paper.summary || '',
-          paper.title
-        );
+        const chineseAbstract = generateChineseAbstract(englishAbstract, paper.title);
         
         const result = db.addPaper({
           arxiv_id: paper.arxiv_id || paper.id,
           title: paper.title,
           authors: authors,
-          abstract: chineseAbstract,
+          abstract: chineseAbstract, // 中文界面默认显示中文摘要
+          abstract_en: englishAbstract, // 保存完整英文原文
+          abstract_cn: chineseAbstract, // 保存中文翻译
           pdf_url: paper.pdf_url,
           arxiv_url: paper.arxiv_url || paper.link,
           published_date: paper.published_date || paper.published,
-          submitted_date: paper.published_date || paper.published, // 使用 published_date 作为 submitted_date
+          submitted_date: paper.published_date || paper.published,
           comment: paper.comment || null,
           accepted_venue: paper.accepted_venue || null
         });

@@ -29,8 +29,11 @@ class PaperDatabase {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         arxiv_id TEXT UNIQUE NOT NULL,
         title TEXT NOT NULL,
+        title_cn TEXT,
         authors TEXT NOT NULL,
         abstract TEXT,
+        abstract_en TEXT,
+        abstract_cn TEXT,
         pdf_url TEXT,
         arxiv_url TEXT,
         published_date TEXT NOT NULL,
@@ -43,23 +46,32 @@ class PaperDatabase {
     `);
 
     // 迁移：添加新列（如果不存在）
-    try {
+    const columns = this.db.prepare("PRAGMA table_info(papers)").all();
+    const columnNames = columns.map(c => c.name);
+    
+    if (!columnNames.includes('abstract_en')) {
+      this.db.exec(`ALTER TABLE papers ADD COLUMN abstract_en TEXT`);
+      console.log('✅ 添加 abstract_en 列');
+    }
+    if (!columnNames.includes('abstract_cn')) {
+      this.db.exec(`ALTER TABLE papers ADD COLUMN abstract_cn TEXT`);
+      console.log('✅ 添加 abstract_cn 列');
+    }
+    if (!columnNames.includes('title_cn')) {
+      this.db.exec(`ALTER TABLE papers ADD COLUMN title_cn TEXT`);
+      console.log('✅ 添加 title_cn 列');
+    }
+    if (!columnNames.includes('submitted_date')) {
       this.db.exec(`ALTER TABLE papers ADD COLUMN submitted_date TEXT`);
       console.log('✅ 添加 submitted_date 列');
-    } catch (e) {
-      // 列已存在
     }
-    try {
+    if (!columnNames.includes('comment')) {
       this.db.exec(`ALTER TABLE papers ADD COLUMN comment TEXT`);
       console.log('✅ 添加 comment 列');
-    } catch (e) {
-      // 列已存在
     }
-    try {
+    if (!columnNames.includes('accepted_venue')) {
       this.db.exec(`ALTER TABLE papers ADD COLUMN accepted_venue TEXT`);
       console.log('✅ 添加 accepted_venue 列');
-    } catch (e) {
-      // 列已存在
     }
 
     // 创建标签表
@@ -227,14 +239,14 @@ class PaperDatabase {
   }
 
   addPaper(paperData) {
-    const { arxiv_id, title, authors, abstract, pdf_url, arxiv_url, published_date, submitted_date, comment, accepted_venue } = paperData;
+    const { arxiv_id, title, title_cn, authors, abstract, abstract_en, abstract_cn, pdf_url, arxiv_url, published_date, submitted_date, comment, accepted_venue } = paperData;
     
     const stmt = this.db.prepare(`
-      INSERT OR REPLACE INTO papers (arxiv_id, title, authors, abstract, pdf_url, arxiv_url, published_date, submitted_date, comment, accepted_venue)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT OR REPLACE INTO papers (arxiv_id, title, title_cn, authors, abstract, abstract_en, abstract_cn, pdf_url, arxiv_url, published_date, submitted_date, comment, accepted_venue)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
-    return stmt.run(arxiv_id, title, authors, abstract || '', pdf_url, arxiv_url, published_date, submitted_date || published_date, comment || null, accepted_venue || null);
+    return stmt.run(arxiv_id, title, title_cn || null, authors, abstract || '', abstract_en || null, abstract_cn || null, pdf_url, arxiv_url, published_date, submitted_date || published_date, comment || null, accepted_venue || null);
   }
 
   // 标签操作

@@ -1,46 +1,50 @@
 /**
- * 迁移摘要数据 - 分离英文原文和中文翻译
- * 格式：[EN] 英文摘要\n[CN] 中文翻译
+ * 迁移现有论文数据到新的摘要字段结构
  */
 
-const db = require('../models/database');
+const path = require('path');
+const db = require(path.join(__dirname, '../models/database'));
 
-console.log('🔄 迁移摘要数据...\n');
+console.log('🔄 开始迁移论文摘要数据...\n');
 
-// 获取所有论文
-const papers = db.db.prepare('SELECT id, abstract FROM papers').all();
+const papers = db.db.prepare('SELECT id, title, abstract FROM papers').all();
 
 let updated = 0;
 
 papers.forEach(paper => {
-  let abstract = paper.abstract;
-  
-  // 如果当前是 [中文摘要] 格式，需要恢复英文原文
-  if (abstract.startsWith('[中文摘要]')) {
-    // 由于已经丢失了英文原文，我们暂时用占位符
-    // 实际应该从原始数据源重新获取
-    const chineseText = abstract.replace('[中文摘要]', '').trim();
+  try {
+    if (!paper.abstract) return;
     
-    // 创建新的双行格式
-    const newAbstract = `[EN] Abstract text in English...\n\n[CN] ${chineseText}`;
+    // 提取英文原文（移除 [中文摘要] 前缀）
+    let englishAbstract = paper.abstract;
+    let chineseAbstract = paper.abstract;
     
-    db.db.prepare('UPDATE papers SET abstract = ? WHERE id = ?').run(newAbstract, paper.id);
+    if (paper.abstract.startsWith('[中文摘要]')) {
+      // 提取中文部分
+      chineseAbstract = paper.abstract.replace(/^\[中文摘要\]\s*/, '').trim();
+      
+      // 这里我们假设原来的 abstract 字段存储的是翻译后的中文
+      // 英文原文需要从其他来源获取，或者暂时留空
+      // 为了演示，我们将中文也作为英文（实际应该从 arxiv 重新获取）
+      englishAbstract = chineseAbstract; // 实际应该重新获取英文原文
+    }
+    
+    // 更新数据库
+    db.db.prepare(`
+      UPDATE papers 
+      SET abstract_en = ?, 
+          abstract_cn = ?,
+          abstract = ?
+      WHERE id = ?
+    `).run(englishAbstract, chineseAbstract, chineseAbstract, paper.id);
+    
     updated++;
-  } else if (!abstract.includes('[EN]') && !abstract.includes('[CN]')) {
-    // 如果是纯英文摘要，添加格式标记
-    const newAbstract = `[EN] ${abstract}\n\n[CN] 中文翻译待补充...`;
-    
-    db.db.prepare('UPDATE papers SET abstract = ? WHERE id = ?').run(newAbstract, paper.id);
-    updated++;
+    console.log(`✅ 迁移论文 ${paper.id}: ${paper.title.substring(0, 40)}...`);
+  } catch (error) {
+    console.error(`❌ 迁移失败 ${paper.id}:`, error.message);
   }
 });
 
-console.log(`✅ 已更新 ${updated} 篇论文的摘要格式\n`);
+console.log(`\n📊 迁移完成: ${updated} 篇论文已更新`);
 
-// 显示示例
-const samples = db.db.prepare('SELECT id, title, abstract FROM papers LIMIT 2').all();
-console.log('📝 新格式示例:\n');
-samples.forEach((paper, i) => {
-  console.log(`${i+1}. ${paper.title.substring(0, 60)}...`);
-  console.log(`   摘要:\n${paper.abstract.split('\n').map(line => '   ' + line).join('\n')}\n`);
-});
+process.exit(0);

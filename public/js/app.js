@@ -61,11 +61,7 @@ function paperApp() {
         this.loadTags(),
         this.loadPapers()
       ]);
-      
-      // 中文界面：翻译摘要
-      if (this.currentLang === 'zh') {
-        setTimeout(() => this.translateAbstractOnPage(), 500);
-      }
+      // 翻译在导入时完成，保存到数据库 chinese_abstract 字段
     },
 
     async loadTags() {
@@ -95,9 +91,13 @@ function paperApp() {
           if (!paper.submitted_date && paper.published_date) {
             paper.submitted_date = paper.published_date;
           }
-          // 解析 accepted_venue 信息（优先使用数据库字段，否则从 comment 解析）
+          // 解析 accepted_venue 信息
           if (!paper.accepted_venue && paper.comment) {
             paper.accepted_venue = this.parseAcceptedAt(paper);
+          }
+          // 确保 chinese_abstract 有值
+          if (!paper.chinese_abstract && paper.abstract) {
+            paper.chinese_abstract = paper.abstract.replace(/^\[中文摘要\]\s*/, '').trim();
           }
           return paper;
         });
@@ -181,45 +181,28 @@ function paperApp() {
       }
     },
 
-    formatAbstract(abstract) {
-      if (!abstract) {
+    formatAbstract(paper) {
+      if (!paper) {
         return this.currentLang === 'zh' ? '暂无简介' : 'No abstract available';
       }
       
-      // 移除 [中文摘要] 前缀
-      let cleanAbstract = abstract.replace(/^\[中文摘要\]\s*/, '').replace(/^\[Abstract\]\s*/, '').trim();
-      
-      // 如果包含 [EN] 和 [CN] 标记，根据当前语言返回对应摘要
-      if (abstract.includes('[EN]') && abstract.includes('[CN]')) {
-        if (this.currentLang === 'en') {
-          // 英文模式：返回 [EN] 和 [CN] 之间的内容
-          const enMatch = abstract.match(/\[EN\]([\s\S]*?)\[CN\]/);
-          if (enMatch && enMatch[1]) {
-            return `<div class="text-gray-700">${enMatch[1].trim()}</div>`;
-          }
-          // 如果没有找到英文部分，返回中文部分
-          const cnPart = abstract.split('[CN]')[1].trim();
-          return `<div class="text-gray-700">${cnPart}</div>`;
-        } else {
-          // 中文模式：返回 [CN] 之后的内容
-          const cnPart = abstract.split('[CN]')[1].trim();
-          return `<div class="text-gray-700">${cnPart}</div>`;
+      // 中文界面：优先使用 abstract_cn 字段
+      if (this.currentLang === 'zh') {
+        if (paper.abstract_cn) {
+          return `<div class="text-gray-700">${paper.abstract_cn}</div>`;
         }
+        // 降级：使用 abstract 字段（移除前缀）
+        const cleanAbstract = (paper.abstract || '').replace(/^\[中文摘要\]\s*/, '').trim();
+        return `<div class="text-gray-700">${cleanAbstract || '暂无简介'}</div>`;
       }
       
-      // 旧格式兼容 [中文摘要]
-      if (abstract.startsWith('[中文摘要]')) {
-        const content = abstract.replace('[中文摘要]', '').trim();
-        // 检测是否已是中文
-        if (/[\u4e00-\u9fa5]/.test(content)) {
-          return `<div class="text-gray-700">${content}</div>`;
-        }
-        // 英文摘要，标记待翻译
-        return `<div class="text-gray-700" data-en="${content}" data-translate-pending="true">${content}</div>`;
+      // 英文界面：优先使用 abstract_en 字段
+      if (paper.abstract_en) {
+        return `<div class="text-gray-700">${paper.abstract_en}</div>`;
       }
-      
-      // 默认返回
-      return `<div class="text-gray-700">${abstract}</div>`;
+      // 降级：使用 abstract 字段（移除前缀）
+      const cleanAbstract = (paper.abstract || '').replace(/^\[中文摘要\]\s*/, '').trim();
+      return `<div class="text-gray-700">${cleanAbstract || 'No abstract available'}</div>`;
     },
 
     async translateAbstractOnPage() {
