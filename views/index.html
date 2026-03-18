@@ -186,21 +186,11 @@
               <div class="text-xs font-medium text-gray-500 mb-1" x-show="currentLang === 'en'">
                 Abstract
               </div>
-              <div class="text-gray-700 text-sm mb-4">
-                <template x-if="currentLang === 'zh'">
-                  <div class="mb-2">
-                    <span class="font-medium">摘要：</span>
-                    <span x-text="paper.abstract.replace('[中文摘要]', '').trim()"></span>
-                  </div>
-                </template>
-                <template x-if="currentLang === 'en'">
-                  <div x-text="paper.abstract.replace('[中文摘要]', '').trim()"></div>
-                </template>
-              </div>
+              <div class="text-gray-700 text-sm mb-4" x-html="formatAbstract(paper.abstract)"></div>
               
               <!-- 标签 -->
               <div class="flex flex-wrap gap-2 mb-3">
-                <template x-if="paper.tags && paper.tags.trim()">
+                <template x-if="paper.tags">
                   <div class="w-full text-xs font-medium text-gray-500 mb-1">
                     <span x-show="currentLang === 'zh'">标签</span>
                     <span x-show="currentLang === 'en'">Tags</span>
