@@ -15,7 +15,7 @@ const i18n = {
     
     // 首页
     homeTitle: 'Arxiv 学术文章',
-    homeSubtitle: '每日自动同步最新 Software Engineering 领域论文',
+    homeSubtitle: '自动同步最新 Software Engineering 领域论文',
     searchPlaceholder: '搜索标题...',
     filterByTag: '按标签筛选',
     allTags: '全部标签',
@@ -45,13 +45,13 @@ const i18n = {
     
     // 关于页面
     aboutTitle: '关于 ArxivPulse',
-    aboutIntro: 'ArxivPulse 是一个简洁美观的学术文章展示网站，每日自动同步最新 Software Engineering 领域的论文。',
+    aboutIntro: 'ArxivPulse 是一个简洁美观的学术文章展示网站，自动同步最新 Software Engineering 领域的论文。',
     featuresTitle: '核心功能',
-    featureAutoSync: '自动同步：每日自动获取 arxiv 最新论文',
+    featureAutoSync: '自动同步：从 arxiv 获取最新论文',
     featureTagFilter: '标签筛选：支持多标签分类和筛选',
-    featureSearch: '全文搜索：支持标题、作者、摘要搜索',
+    featureSearch: '标题搜索：支持论文标题关键词匹配',
     featureResponsive: '响应式设计：支持桌面和移动端',
-    featurePush: '消息推送：飞书定时推送整理后的文章',
+    // featurePush: '消息推送：飞书定时推送整理后的文章', // 已移除
     featureExtension: '标签扩展：支持动态添加新标签',
     licenseTitle: '许可证',
     licenseText: '本项目采用',
@@ -117,7 +117,7 @@ const i18n = {
     
     // Home
     homeTitle: 'Arxiv Papers',
-    homeSubtitle: 'Daily automatic sync of latest Software Engineering papers',
+    homeSubtitle: 'Automatic sync of latest Software Engineering papers',
     searchPlaceholder: 'Search title...',
     filterByTag: 'Filter by tag',
     allTags: 'All Tags',
@@ -147,13 +147,13 @@ const i18n = {
     
     // About
     aboutTitle: 'About ArxivPulse',
-    aboutIntro: 'ArxivPulse is a clean and beautiful academic paper display website that automatically syncs the latest Software Engineering papers daily.',
+    aboutIntro: 'ArxivPulse is a clean and beautiful academic paper display website that automatically syncs the latest Software Engineering papers.',
     featuresTitle: 'Features',
-    featureAutoSync: 'Auto Sync: Daily automatic fetch of latest arxiv papers',
+    featureAutoSync: 'Auto Sync: Automatic fetch of latest arxiv papers',
     featureTagFilter: 'Tag Filter: Multi-tag classification and filtering',
-    featureSearch: 'Full-text Search: Search by title, author, abstract',
+    featureSearch: 'Title Search: Search by paper title keywords',
     featureResponsive: 'Responsive Design: Desktop and mobile support',
-    featurePush: 'Push Notifications: Scheduled Feishu notifications',
+    // featurePush: 'Push Notifications: Scheduled Feishu notifications', // Removed
     featureExtension: 'Tag Extension: Dynamic tag addition support',
     licenseTitle: 'License',
     licenseText: 'This project is licensed under the',

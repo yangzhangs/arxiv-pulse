@@ -1,7 +1,7 @@
 {
   "name": "arxiv-pulse",
   "version": "1.0.0",
-  "description": "Arxiv 学术文章展示平台 - 每日自动同步最新 Software Engineering 领域论文",
+  "description": "Arxiv 学术文章展示平台 - 自动同步最新 Software Engineering 领域论文",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",

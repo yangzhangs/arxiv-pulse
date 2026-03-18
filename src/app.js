@@ -1,7 +1,7 @@
 /**
  * ArxivPulse - Arxiv 学术文章展示平台
  * 
- * 一个简洁美观的学术文章展示网站，每日自动同步最新 Software Engineering 领域论文
+ * 一个简洁美观的学术文章展示网站，自动同步最新 Software Engineering 领域论文
  * 
  * @author yangzhangs
  * @license MIT
