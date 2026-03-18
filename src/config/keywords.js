@@ -4,15 +4,15 @@
  */
 
 module.exports = {
-  // 英文关键词（连续匹配）
+  // 英文关键词（严格标题匹配）
   en: [
     'Docker', 'CI/CD', 'DevOps', 'Microservices', 'Cloud Native',
-    'Serverless', 'Hugging Face', 'Github Actions',
-    'Agent skills', 'Deprecated Packages', 'Kubernetes', 'MLOps',
-    'Container', 'Automation', 'LLM', 'Agent', 'Agents', 'MCP', 'Code Agents'
+    'Serverless', 'Hugging Face', 'Github Actions', 'GitHub Actions',
+    'Agent skills', 'Agent', 'Agents', 'MCP', 'Code Agents',
+    'Kubernetes', 'MLOps', 'Container', 'Automation', 'LLM'
   ],
   
-  // 中文关键词
+  // 中文关键词（严格标题匹配）
   zh: [
     '容器', '自动化', '微服务', '云原生',
     '持续集成', '持续部署', '智能代理', '代码代理'
@@ -33,13 +33,13 @@ module.exports = {
     'Serverless': 'Serverless',
     'Hugging Face': 'Hugging Face',
     'Github Actions': 'Github Actions',
+    'GitHub Actions': 'Github Actions',
     'Agent skills': 'Agent skills',
     '智能代理': 'Agent skills',
     'Agent': 'Agent skills',
     'Agents': 'Agent skills',
     '代码代理': 'Agent skills',
     'Code Agents': 'Agent skills',
-    'Deprecated Packages': 'Deprecated Packages',
     'Kubernetes': 'Cloud Native',
     'MLOps': 'MLOps',
     'Container': 'Docker',

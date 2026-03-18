@@ -68,12 +68,12 @@ function parseArxivResponse(xml) {
         
         papers.push(paper);
         
-        // 检查是否强相关
-        const searchText = `${title} ${summary}`.toLowerCase();
-        const isRelated = KEYWORDS.some(kw => searchText.toLowerCase().includes(kw.toLowerCase()));
+        // 检查是否强相关 - 仅匹配标题中的关键词
+        const titleLower = title.toLowerCase();
+        const isRelated = KEYWORDS.some(kw => titleLower.includes(kw.toLowerCase()));
         
         if (isRelated) {
-          paper.tags = extractTags(searchText);
+          paper.tags = extractTags(titleLower);
           relatedPapers.push(paper);
         }
       }
@@ -112,11 +112,11 @@ function parseArxivResponse(xml) {
   }
 }
 
-function extractTags(text) {
+function extractTags(title) {
   const tags = [];
   
   for (const [kw, tag] of Object.entries(TAG_MAP)) {
-    if (text.toLowerCase().includes(kw.toLowerCase())) {
+    if (title.includes(kw.toLowerCase())) {
       tags.push(tag);
     }
   }
