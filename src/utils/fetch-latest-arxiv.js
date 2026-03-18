@@ -7,13 +7,10 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-// 强相关关键词
-const KEYWORDS = [
-  'Docker', 'CI/CD', 'DevOps', '微服务', '云原生', 
-  'Serverless', 'Hugging Face', 'Github Actions', 
-  'Agent skills', 'Kubernetes', 'MLOps', '容器', 
-  '自动化', '持续集成', '持续部署', 'LLM', 'Agent'
-];
+// 加载集中配置的关键词
+const keywords = require('../config/keywords');
+const KEYWORDS = [...keywords.en, ...keywords.zh];
+const TAG_MAP = keywords.tagMap;
 
 console.log('📡 正在从 Arxiv API 获取最新 cs.SE 论文...\n');
 
@@ -117,24 +114,8 @@ function parseArxivResponse(xml) {
 
 function extractTags(text) {
   const tags = [];
-  const tagMap = {
-    'Docker': 'Docker',
-    'CI/CD': 'CI/CD',
-    'DevOps': 'DevOps',
-    '微服务': '微服务',
-    '云原生': '云原生',
-    'Serverless': 'Serverless',
-    'Hugging Face': 'Hugging Face',
-    'Github Actions': 'Github Actions',
-    'GitHub Actions': 'Github Actions',
-    'Agent': 'Agent skills',
-    'Kubernetes': '云原生',
-    'MLOps': 'MLOps',
-    '容器': 'Docker',
-    'LLM': 'Agent skills'
-  };
   
-  for (const [kw, tag] of Object.entries(tagMap)) {
+  for (const [kw, tag] of Object.entries(TAG_MAP)) {
     if (text.toLowerCase().includes(kw.toLowerCase())) {
       tags.push(tag);
     }

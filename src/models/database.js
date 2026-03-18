@@ -8,6 +8,14 @@ const path = require('path');
 
 const DB_PATH = process.env.DATABASE_PATH || path.join(__dirname, '../../data/arxiv-pulse.db');
 
+// 确保数据目录存在
+const fs = require('fs');
+const dbDir = path.dirname(DB_PATH);
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+  console.log(`📁 创建数据目录：${dbDir}`);
+}
+
 class PaperDatabase {
   constructor() {
     this.db = new Database(DB_PATH);
@@ -114,15 +122,10 @@ class PaperDatabase {
     console.log('✅ 数据库初始化完成');
   }
 
-  // 强相关关键词列表（全部英文，多词关键词必须连续匹配）
+  // 强相关关键词列表（从集中配置加载）
   getStrongRelatedKeywords() {
-    return [
-      'Docker', 'CI/CD', 'DevOps', 'Microservices', 'Cloud Native',
-      'Serverless', 'Hugging Face', 'Github Actions', 
-      'Agent skills', 'Deprecated Packages', 'Kubernetes', 'MLOps',
-      'Container', 'Automation',
-      'LLM', 'Agent', 'Agents', 'MCP', 'Code Agents'
-    ];
+    const keywords = require('../config/keywords');
+    return keywords.en;
   }
 
   // 构建 SQL WHERE 条件用于强相关过滤（严格连续匹配）
