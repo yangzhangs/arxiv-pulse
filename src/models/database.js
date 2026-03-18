@@ -42,6 +42,26 @@ class PaperDatabase {
       )
     `);
 
+    // 迁移：添加新列（如果不存在）
+    try {
+      this.db.exec(`ALTER TABLE papers ADD COLUMN submitted_date TEXT`);
+      console.log('✅ 添加 submitted_date 列');
+    } catch (e) {
+      // 列已存在
+    }
+    try {
+      this.db.exec(`ALTER TABLE papers ADD COLUMN comment TEXT`);
+      console.log('✅ 添加 comment 列');
+    } catch (e) {
+      // 列已存在
+    }
+    try {
+      this.db.exec(`ALTER TABLE papers ADD COLUMN accepted_venue TEXT`);
+      console.log('✅ 添加 accepted_venue 列');
+    } catch (e) {
+      // 列已存在
+    }
+
     // 创建标签表
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS tags (

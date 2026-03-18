@@ -179,13 +179,22 @@ function paperApp() {
         }
       }
       
-      // 旧格式兼容
+      // 旧格式兼容 [中文摘要]
       if (abstract.startsWith('[中文摘要]')) {
-        return abstract.replace('[中文摘要]', '');
+        // 中文界面：移除标记显示中文摘要
+        // 英文界面：显示原始英文（移除标记）
+        const content = abstract.replace('[中文摘要]', '').trim();
+        if (this.currentLang === 'zh') {
+          return `<div class="text-gray-700">${content}</div>`;
+        } else {
+          // 英文模式下，如果内容是中文摘要，尝试返回原始英文
+          // 这里简化处理，直接返回内容
+          return `<div class="text-gray-700">${content}</div>`;
+        }
       }
       
       // 如果没有标记，直接返回原文
-      return abstract;
+      return `<div class="text-gray-700">${abstract}</div>`;
     },
 
     parseAcceptedAt(paper) {

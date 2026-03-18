@@ -55,32 +55,188 @@ function fixAuthors(authors) {
 
 /**
  * 生成中文摘要
- * 实际生产中可集成翻译 API
+ * 使用术语映射 + 关键句提取生成伪中文摘要
  * @param {string} abstract - 英文摘要
  * @param {string} title - 标题
- * @returns {string} - 中文摘要
+ * @returns {string} - 中文格式摘要
  */
 function generateChineseAbstract(abstract, title) {
-  // 提取第一句作为核心内容
-  const firstSentence = abstract.split('.')[0] || abstract.substring(0, 200);
+  if (!abstract) return '[中文摘要] 暂无摘要';
   
-  // 简单关键词翻译
+  // 提取前3句作为核心内容（更完整）
+  const sentences = abstract.split(/\.(\s+|$)/).filter(s => s.trim());
+  const coreContent = sentences.slice(0, 3).join('. ') + (sentences.length > 3 ? '...' : '');
+  
+  // 扩展术语映射表
   const termMap = {
+    // 技术术语
     'self-evolving': '自进化',
     'language agent': '语言代理',
     'multi-agent': '多代理',
     'benchmark': '基准测试',
     'code completion': '代码补全',
     'latency': '延迟',
-    'accuracy': '准确性'
+    'accuracy': '准确性',
+    'software engineering': '软件工程',
+    'machine learning': '机器学习',
+    'deep learning': '深度学习',
+    'artificial intelligence': '人工智能',
+    'natural language processing': '自然语言处理',
+    'large language model': '大语言模型',
+    'LLM': '大语言模型',
+    'CI/CD': '持续集成/持续部署',
+    'DevOps': '开发运维一体化',
+    'microservices': '微服务',
+    'cloud native': '云原生',
+    'serverless': '无服务器',
+    'Kubernetes': 'Kubernetes容器编排',
+    'Docker': 'Docker容器',
+    'container': '容器',
+    'automation': '自动化',
+    'deployment': '部署',
+    'pipeline': '流水线',
+    'repository': '代码仓库',
+    'version control': '版本控制',
+    'GitHub Actions': 'GitHub Actions自动化',
+    'test code': '测试代码',
+    'production code': '生产代码',
+    'code review': '代码审查',
+    'pull request': '拉取请求',
+    'continuous integration': '持续集成',
+    'continuous deployment': '持续部署',
+    'open source': '开源',
+    'API': '应用程序接口',
+    'framework': '框架',
+    'algorithm': '算法',
+    'performance': '性能',
+    'optimization': '优化',
+    'scalability': '可扩展性',
+    'reliability': '可靠性',
+    'maintainability': '可维护性',
+    'modular': '模块化',
+    'architecture': '架构',
+    'design pattern': '设计模式',
+    'refactoring': '重构',
+    'technical debt': '技术债务',
+    'agile': '敏捷',
+    'scrum': 'Scrum敏捷',
+    'user story': '用户故事',
+    'requirement': '需求',
+    'specification': '规格说明',
+    'documentation': '文档',
+    'testing': '测试',
+    'unit test': '单元测试',
+    'integration test': '集成测试',
+    'end-to-end test': '端到端测试',
+    'regression test': '回归测试',
+    'mock': '模拟',
+    'stub': '存根',
+    'dependency': '依赖',
+    'injection': '注入',
+    'inversion of control': '控制反转',
+    'dependency injection': '依赖注入',
+    'interface': '接口',
+    'implementation': '实现',
+    'abstraction': '抽象',
+    'encapsulation': '封装',
+    'inheritance': '继承',
+    'polymorphism': '多态',
+    'class': '类',
+    'object': '对象',
+    'method': '方法',
+    'function': '函数',
+    'variable': '变量',
+    'parameter': '参数',
+    'return value': '返回值',
+    'exception': '异常',
+    'error handling': '错误处理',
+    'logging': '日志记录',
+    'monitoring': '监控',
+    'alerting': '告警',
+    'observability': '可观测性',
+    'trace': '追踪',
+    'metrics': '指标',
+    'dashboard': '仪表盘',
+    'visualization': '可视化',
+    'data': '数据',
+    'database': '数据库',
+    'query': '查询',
+    'index': '索引',
+    'transaction': '事务',
+    'concurrency': '并发',
+    'parallel': '并行',
+    'asynchronous': '异步',
+    'synchronous': '同步',
+    'blocking': '阻塞',
+    'non-blocking': '非阻塞',
+    'event-driven': '事件驱动',
+    'message queue': '消息队列',
+    'pub-sub': '发布订阅',
+    'webhook': '网络钩子',
+    'REST API': 'REST接口',
+    'GraphQL': 'GraphQL查询语言',
+    'WebSocket': 'WebSocket通信',
+    'gRPC': 'gRPC远程调用',
+    'protobuf': 'Protocol Buffers',
+    'JSON': 'JSON数据格式',
+    'XML': 'XML标记语言',
+    'YAML': 'YAML配置格式',
+    'configuration': '配置',
+    'environment': '环境',
+    'variable': '变量',
+    'secret': '密钥',
+    'credential': '凭证',
+    'authentication': '认证',
+    'authorization': '授权',
+    'OAuth': 'OAuth授权协议',
+    'JWT': 'JWT令牌',
+    'HTTPS': 'HTTPS安全协议',
+    'TLS': 'TLS传输层安全',
+    'SSL': 'SSL安全套接层',
+    'certificate': '证书',
+    'encryption': '加密',
+    'hash': '哈希',
+    'signature': '签名',
+    'vulnerability': '漏洞',
+    'security': '安全',
+    'penetration test': '渗透测试',
+    'static analysis': '静态分析',
+    'dynamic analysis': '动态分析',
+    'code coverage': '代码覆盖率',
+    'cyclomatic complexity': '圈复杂度',
+    'technical metric': '技术指标',
+    'KPI': '关键绩效指标',
+    'SLA': '服务等级协议',
+    'SLO': '服务等级目标',
+    'SLI': '服务等级指标',
+    'incident': '事件',
+    'postmortem': '事后分析',
+    'root cause': '根本原因',
+    'blameless': '无责',
+    'retrospective': '回顾',
+    'sprint': '冲刺',
+    'iteration': '迭代',
+    'release': '发布',
+    'rollback': '回滚',
+    'hotfix': '热修复',
+    'feature flag': '功能开关',
+    'A/B test': 'A/B测试',
+    'canary': '金丝雀发布',
+    'blue-green': '蓝绿部署',
+    'dark launch': '灰度发布'
   };
   
-  let chineseTranslation = firstSentence;
-  for (const [en, zh] of Object.entries(termMap)) {
-    chineseTranslation = chineseTranslation.replace(new RegExp(en, 'gi'), zh);
+  let chineseTranslation = coreContent;
+  
+  // 按长度降序排序，避免短词替换影响长词
+  const sortedTerms = Object.entries(termMap).sort((a, b) => b[0].length - a[0].length);
+  
+  for (const [en, zh] of sortedTerms) {
+    const regex = new RegExp(en.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    chineseTranslation = chineseTranslation.replace(regex, zh);
   }
   
-  return `[中文摘要] ${chineseTranslation}...`;
+  return `[中文摘要] ${chineseTranslation}`;
 }
 
 /**
