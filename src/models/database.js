@@ -34,6 +34,9 @@ class PaperDatabase {
         pdf_url TEXT,
         arxiv_url TEXT,
         published_date TEXT NOT NULL,
+        submitted_date TEXT,
+        comment TEXT,
+        accepted_venue TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
@@ -204,14 +207,14 @@ class PaperDatabase {
   }
 
   addPaper(paperData) {
-    const { arxiv_id, title, authors, abstract, pdf_url, arxiv_url, published_date } = paperData;
+    const { arxiv_id, title, authors, abstract, pdf_url, arxiv_url, published_date, submitted_date, comment, accepted_venue } = paperData;
     
     const stmt = this.db.prepare(`
-      INSERT OR REPLACE INTO papers (arxiv_id, title, authors, abstract, pdf_url, arxiv_url, published_date)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT OR REPLACE INTO papers (arxiv_id, title, authors, abstract, pdf_url, arxiv_url, published_date, submitted_date, comment, accepted_venue)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
-    return stmt.run(arxiv_id, title, authors, abstract || '', pdf_url, arxiv_url, published_date);
+    return stmt.run(arxiv_id, title, authors, abstract || '', pdf_url, arxiv_url, published_date, submitted_date || published_date, comment || null, accepted_venue || null);
   }
 
   // 标签操作

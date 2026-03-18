@@ -170,15 +170,14 @@
               
               <!-- 会议/期刊标记 -->
               <div class="mb-3">
-                <template x-if="paper.accepted_at">
+                <template x-if="paper.accepted_venue">
                   <span 
                     class="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium"
-                    :title="paper.accepted_at"
                   >
                     🎉 
                     <span x-show="currentLang === 'zh'" class="ml-1">录用于：</span>
                     <span x-show="currentLang === 'en'" class="ml-1">Accepted at:</span>
-                    <span x-text="paper.accepted_at"></span>
+                    <span x-text="paper.accepted_venue"></span>
                   </span>
                 </template>
               </div>

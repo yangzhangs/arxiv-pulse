@@ -186,8 +186,16 @@ function paperApp() {
       return abstract;
     },
 
-    parseAcceptedAt(comments) {
-      if (!comments) return null;
+    parseAcceptedAt(paper) {
+      // 优先使用 accepted_venue 字段
+      if (paper.accepted_venue) {
+        return paper.accepted_venue;
+      }
+      
+      // 兼容旧数据：从 comment 字段解析
+      if (!paper.comment) return null;
+      
+      const comments = paper.comment;
       
       // 匹配 "accepted at" 模式
       const acceptedMatch = comments.match(/accepted at (.+?)(?:\.|$)/i);

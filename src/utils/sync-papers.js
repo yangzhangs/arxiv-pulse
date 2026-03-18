@@ -142,7 +142,9 @@ function importFromJson(jsonFile, strictMode = true) {
           pdf_url: paper.pdf_url,
           arxiv_url: paper.arxiv_url || paper.link,
           published_date: paper.published_date || paper.published,
-          submitted_date: paper.submitted_date || paper.published_date || paper.published
+          submitted_date: paper.published_date || paper.published, // 使用 published_date 作为 submitted_date
+          comment: paper.comment || null,
+          accepted_venue: paper.accepted_venue || null
         });
 
         if (result.changes > 0) {

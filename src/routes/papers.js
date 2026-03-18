@@ -62,7 +62,7 @@ router.get('/search/:query', (req, res) => {
 // 添加论文（需要认证）
 router.post('/', (req, res) => {
   try {
-    const { arxiv_id, title, authors, abstract, pdf_url, arxiv_url, published_date, tags } = req.body;
+    const { arxiv_id, title, authors, abstract, pdf_url, arxiv_url, published_date, submitted_date, comment, accepted_venue, tags } = req.body;
     
     if (!arxiv_id || !title || !authors || !published_date) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -75,7 +75,10 @@ router.post('/', (req, res) => {
       abstract,
       pdf_url,
       arxiv_url,
-      published_date
+      published_date,
+      submitted_date,
+      comment,
+      accepted_venue
     });
 
     // 添加标签

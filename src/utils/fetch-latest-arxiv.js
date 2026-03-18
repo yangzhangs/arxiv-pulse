@@ -40,6 +40,7 @@ function parseArxivResponse(xml) {
   const entries = xml.split('<entry>');
   const papers = [];
   const relatedPapers = [];
+  const seenIds = new Set(); // 去重机制：记录已处理的 arxiv_id
   
   entries.forEach((entry, index) => {
     if (index === 0) return;
@@ -50,11 +51,22 @@ function parseArxivResponse(xml) {
       const summary = entry.match(/<summary>(.*?)<\/summary>/s)?.[1]?.replace(/\n/g, ' ').trim() || '';
       const published = entry.match(/<published>(.*?)<\/published>/)?.[1] || '';
       
+      // 提取 comment 字段（包含 accepted 信息）
+      const commentMatch = entry.match(/<arxiv:comment[^>]*>(.*?)<\/arxiv:comment>/s);
+      const comment = commentMatch?.[1]?.replace(/\n/g, ' ').trim() || '';
+      
       // 修复作者信息解析（支持多行 XML + 命名空间）
       const authorMatches = entry.matchAll(/<author>[\s\S]*?<name>(.*?)<\/name>[\s\S]*?<\/author>/g);
       const authors = Array.from(authorMatches).map(m => m[1]).join(', ');
       
       const arxivId = id.split('/abs/').pop() || id.split('/').pop();
+      
+      // 去重检查：跳过已存在的论文
+      if (seenIds.has(arxivId)) {
+        console.log(`⚠️  跳过重复论文: ${arxivId}`);
+        return;
+      }
+      seenIds.add(arxivId);
       
       if (title && arxivId) {
         const paper = {
@@ -64,8 +76,15 @@ function parseArxivResponse(xml) {
           abstract: summary,
           pdf_url: `https://arxiv.org/pdf/${arxivId}.pdf`,
           arxiv_url: `https://arxiv.org/abs/${arxivId}`,
-          published_date: published.split('T')[0]
+          published_date: published.split('T')[0],
+          comment: comment // 添加 comment 字段
         };
+        
+        // 提取 accepted 信息
+        const acceptedInfo = extractAcceptedInfo(comment);
+        if (acceptedInfo) {
+          paper.accepted_venue = acceptedInfo;
+        }
         
         papers.push(paper);
         
@@ -115,12 +134,50 @@ function parseArxivResponse(xml) {
 
 function extractTags(title) {
   const tags = [];
+  const seenTags = new Set(); // 去重集合
   
   for (const [kw, tag] of Object.entries(TAG_MAP)) {
-    if (title.includes(kw.toLowerCase())) {
+    if (title.includes(kw.toLowerCase()) && !seenTags.has(tag)) {
       tags.push(tag);
+      seenTags.add(tag);
     }
   }
   
   return tags.length > 0 ? tags : ['cs.SE'];
+}
+
+// 从 comment 中提取 accepted 信息
+function extractAcceptedInfo(comment) {
+  if (!comment) return null;
+  
+  const lowerComment = comment.toLowerCase();
+  
+  // 检查是否包含 accepted 关键词
+  if (!lowerComment.includes('accepted')) {
+    return null;
+  }
+  
+  // 尝试提取会议/期刊名称的常见模式
+  const patterns = [
+    // Accepted at/to/by XXX
+    /accepted\s+(?:at|to|by)\s+([^,.]+)/i,
+    // Accepted for publication in/at XXX
+    /accepted\s+for\s+publication\s+(?:in|at)\s+([^,.]+)/i,
+    // Accepted to appear in XXX
+    /accepted\s+to\s+appear\s+(?:in|at)\s+([^,.]+)/i,
+    // Accepted by XXX
+    /accepted\s+by\s+([^,.]+)/i,
+    // Accepted, XXX
+    /accepted[,;]\s+([^,.]+)/i
+  ];
+  
+  for (const pattern of patterns) {
+    const match = comment.match(pattern);
+    if (match) {
+      return match[1].trim();
+    }
+  }
+  
+  // 如果没有匹配到具体模式，返回 "Accepted"
+  return 'Accepted';
 }
