@@ -181,6 +181,9 @@ function paperApp() {
         return this.currentLang === 'zh' ? '暂无简介' : 'No abstract available';
       }
       
+      // 移除 [中文摘要] 前缀
+      let cleanAbstract = abstract.replace(/^\[中文摘要\]\s*/, '').replace(/^\[Abstract\]\s*/, '').trim();
+      
       // 如果包含 [EN] 和 [CN] 标记，根据当前语言返回对应摘要
       if (abstract.includes('[EN]') && abstract.includes('[CN]')) {
         if (this.currentLang === 'en') {
