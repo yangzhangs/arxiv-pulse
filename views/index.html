@@ -189,19 +189,17 @@
               <div class="text-gray-700 text-sm mb-4" x-html="formatAbstract(paper.abstract)"></div>
               
               <!-- 标签 -->
-              <div class="flex flex-wrap gap-2 mb-3">
-                <template x-if="paper.tags">
-                  <div class="w-full text-xs font-medium text-gray-500 mb-1">
-                    <span x-show="currentLang === 'zh'">标签</span>
-                    <span x-show="currentLang === 'en'">Tags</span>
-                  </div>
-                  <template x-for="tag in formatTags(paper.tags)" :key="tag">
-                    <span 
-                      class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full cursor-pointer hover:bg-blue-200"
-                      @click="selectedTag = tag.trim(); filterByTag()"
-                      x-text="tag.trim()"
-                    ></span>
-                  </template>
+              <div class="flex flex-wrap gap-2 mb-3" x-show="paper.tags">
+                <div class="w-full text-xs font-medium text-gray-500 mb-1">
+                  <span x-show="currentLang === 'zh'">标签</span>
+                  <span x-show="currentLang === 'en'">Tags</span>
+                </div>
+                <template x-for="tag in formatTags(paper.tags)" :key="tag">
+                  <span 
+                    class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full cursor-pointer hover:bg-blue-200"
+                    @click="selectedTag = tag; filterByTag()"
+                    x-text="tag"
+                  ></span>
                 </template>
               </div>
               
