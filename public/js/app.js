@@ -65,7 +65,7 @@ function paperApp() {
 
     async loadTags() {
       try {
-        const response = await fetch('api/tags');
+        const response = await fetch('/arxiv-pulse/api/tags');
         const data = await response.json();
         this.tags = data.tags || [];
       } catch (error) {
@@ -76,18 +76,20 @@ function paperApp() {
     async loadPapers() {
       this.loading = true;
       try {
-        let url = `api/papers?page=${this.currentPage}&limit=${this.pagination.limit}`;
+        let url = `/arxiv-pulse/api/papers?page=${this.currentPage}&limit=${this.pagination.limit}`;
         
         if (this.selectedTag) {
-          url = `api/papers/tag/${encodeURIComponent(this.selectedTag)}?page=${this.currentPage}&limit=${this.pagination.limit}`;
+          url = `/arxiv-pulse/api/papers/tag/${encodeURIComponent(this.selectedTag)}?page=${this.currentPage}&limit=${this.pagination.limit}`;
         }
 
         const response = await fetch(url);
         const data = await response.json();
         
         this.papers = (data.papers || []).map(paper => {
-          // 解析 accepted_at 信息
-          paper.accepted_at = this.parseAcceptedAt(paper.comments);
+          // 解析 accepted_venue 信息（优先使用数据库字段，否则从 comment 解析）
+          if (!paper.accepted_venue && paper.comment) {
+            paper.accepted_venue = this.parseAcceptedAt(paper);
+          }
           return paper;
         });
         
@@ -107,7 +109,7 @@ function paperApp() {
 
       this.loading = true;
       try {
-        const url = `api/papers/search/${encodeURIComponent(this.searchQuery)}?page=${this.currentPage}&limit=${this.pagination.limit}`;
+        const url = `/arxiv-pulse/api/papers/search/${encodeURIComponent(this.searchQuery)}?page=${this.currentPage}&limit=${this.pagination.limit}`;
         const response = await fetch(url);
         const data = await response.json();
         
