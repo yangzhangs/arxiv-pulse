@@ -61,6 +61,11 @@ function paperApp() {
         this.loadTags(),
         this.loadPapers()
       ]);
+      
+      // 中文界面：翻译摘要
+      if (this.currentLang === 'zh') {
+        setTimeout(() => this.translateAbstractOnPage(), 500);
+      }
     },
 
     async loadTags() {
@@ -204,20 +209,39 @@ function paperApp() {
       
       // 旧格式兼容 [中文摘要]
       if (abstract.startsWith('[中文摘要]')) {
-        // 中文界面：移除标记显示中文摘要
-        // 英文界面：显示原始英文（移除标记）
         const content = abstract.replace('[中文摘要]', '').trim();
-        if (this.currentLang === 'zh') {
-          return `<div class="text-gray-700">${content}</div>`;
-        } else {
-          // 英文模式下，如果内容是中文摘要，尝试返回原始英文
-          // 这里简化处理，直接返回内容
+        // 检测是否已是中文
+        if (/[\u4e00-\u9fa5]/.test(content)) {
           return `<div class="text-gray-700">${content}</div>`;
         }
+        // 英文摘要，标记待翻译
+        return `<div class="text-gray-700" data-en="${content}" data-translate-pending="true">${content}</div>`;
       }
       
-      // 如果没有标记，直接返回原文
+      // 默认返回
       return `<div class="text-gray-700">${abstract}</div>`;
+    },
+
+    async translateAbstractOnPage() {
+      // 页面加载后翻译所有待翻译摘要
+      if (this.currentLang !== 'zh') return;
+      
+      const pendingElements = document.querySelectorAll('[data-translate-pending="true"]');
+      for (const el of pendingElements) {
+        const enText = el.getAttribute('data-en');
+        if (!enText) continue;
+        
+        try {
+          const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(enText)}&langpair=en|zh`);
+          const data = await response.json();
+          if (data && data.responseData && data.responseData.translatedText) {
+            el.textContent = data.responseData.translatedText;
+            el.removeAttribute('data-translate-pending');
+          }
+        } catch (error) {
+          console.error('Translation failed:', error);
+        }
+      }
     },
 
     parseAcceptedAt(paper) {
